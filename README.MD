@@ -241,7 +241,9 @@ const model = genAI.getGenerativeModel({
 ### 3. Vastausten käsittely ja validointi
 
 - **Strukturoitu data**: Pyydä mallia tuottamaan vastaukset strukturoidussa muodossa (esim. JSON) helpompaa jatkokäsittelyä varten.
-- **Validointi**: Tarkista aina mallin tuottamat vastaukset. Käytä esimerkiksi Zod-kirjastoa JSON-vastausten validointiin.
+- **Validointi**: 
+  - Strukturoidun datan kanssa: Jos käytät ennalta määriteltyä skeemaa tai työkalua, joka pakottaa mallin tuottamaan strukturoidun tuloksen, voit vähentää tai jopa poistaa erillisen validoinnin tarpeen.
+  - Vapaamuotoisen datan kanssa: On hyvä tarkistaa mallin tuottamat vastaukset. Käytä esimerkiksi Zod-kirjastoa JSON-vastausten validointiin.
 
 ### 4. Jatkuva parantaminen
 
@@ -356,3 +358,40 @@ Kuukausikustannus (30 päivää): €2.40
 
 Nämä esimerkit osoittavat, että GPT-4o-mallin käyttö on suhteellisen edullista. Yksittäiset kyselyt maksavat vain murto-osia sentistä, mikä mahdollistaa laajan käytön ilman merkittäviä kustannuksia.
 
+## Ramdom tietoa | Hyödyllisiä työkaluja RAG-toteutukseen
+
+### LangChain
+
+LangChain on monipuolinen sovelluskehys LLM-pohjaisten sovellusten rakentamiseen. Se on saatavilla sekä Python- että Node.js-ympäristöihin, mikä tekee siitä joustavan vaihtoehdon eri kehitysympäristöihin. LangChain tarjoaa useita hyödyllisiä ominaisuuksia:
+
+- Promptien hallinta ja ketjutus
+- Muistikomponentit keskusteluhistorian hallintaan
+- Integraatiot eri vektoritietokantoihin ja hakumoottoreihin
+- Valmiit työkalut RAG-toteutuksiin
+
+LangChainin avulla voit helposti yhdistää eri LLM-malleja, tietokantoja ja muita komponentteja kokonaisvaltaisiksi AI-sovelluksiksi.
+
+### Supabase
+
+Supabase on avoimen lähdekoodin Backend-as-a-Service (BaaS) alusta, joka tarjoaa myös vektoritietokantaominaisuuksia. Se on rakennettu PostgreSQL:n päälle ja tarjoaa ilmaisen tason kehittäjille. Supabasen vektoritietokanta-ominaisuudet tekevät siitä houkuttelevan vaihtoehdon RAG-toteutuksiin:
+
+- Helppo integroida olemassa oleviin sovelluksiin
+- Tuki pgvector-laajennukselle, mikä mahdollistaa tehokkaan vektorihakujen
+- Skaalautuva ratkaisu, joka kasvaa projektisi mukana
+- Yhdistää perinteisen relaatiotietokannan ja vektoritietokannan edut
+
+Supabase tarjoaa myös muita hyödyllisiä palveluita, kuten autentikaation ja reaaliaikaisen tiedonsiirron, mikä tekee siitä monipuolisen alustan kokonaisvaltaisten sovellusten rakentamiseen.
+
+### Datan kerääminen
+
+RAG-mallien tehokas käyttö edellyttää usein oman erikoistuneen datan keräämistä. Web scraping on yksi yleinen menetelmä tähän tarkoitukseen. Tässä muutamia työkaluja ja huomioita web scrapingiin liittyen:
+
+- **Python-työkalut**: 
+  - BeautifulSoup: Helppokäyttöinen kirjasto HTML- ja XML-tiedostojen jäsentämiseen
+  - Scrapy: Tehokas ja skaalautuva web crawling -sovelluskehys
+
+- **Node.js-työkalut**:
+  - Cheerio: Nopea ja joustava kirjasto HTML:n manipulointiin
+  - Puppeteer: Googlen kehittämä työkalu, joka mahdollistaa selainpohjaisen scrapingin
+
+Web scraping on tehokas tapa kerätä dataa, mutta huomioi, että jotkin sivustot saattavat rajoittaa tai kieltää scraping-toiminnan.
