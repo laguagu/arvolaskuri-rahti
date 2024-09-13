@@ -24,7 +24,6 @@ Tämä projekti on Node.js-pohjainen sovellus, joka käyttää Google Gemini AI 
    ```
 4. Avaa `.env` tiedosto ja lisää sinne oma GEMINI_API_KEY
 
-
 ## Käyttö
 
 Aja sovellus komennolla:
@@ -55,4 +54,304 @@ Tämä suorittaa `index.js`-tiedoston, joka demonstroi hinta-arvioinnin toiminta
 - Todellisessa sovelluksessa tiedot tulisivat käyttöliittymästä tai API-kutsusta
 - Promptia ja mallin asetuksia voi säätää tarpeen mukaan paremman tarkkuuden saavuttamiseksi
 - TypeScriptin käyttö parantaisi koodin laatua ja tyypitystä
+
+## Hyödyllisiä vinkkejä jatkokehitykseen
+
+### Structured Output Gemini AI:lla
+
+Gemini AI tukee strukturoitua JSON-muotoista tulostetta. Tämä voi olla hyödyllinen tapa saada johdonmukaisia ja helposti käsiteltäviä vastauksia. Voit määritellä JSON-skeeman joko promptissa tai mallin konfiguraatiossa.
+
+Esimerkki skeeman määrittelystä mallin konfiguraatiossa:
+
+```javascript
+const schema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    price: {
+      type: SchemaType.NUMBER,
+      description: "Estimated price of the furniture",
+    },
+    confidence: {
+      type: SchemaType.STRING,
+      description: "Confidence level of the estimation",
+    },
+  },
+  required: ["price", "confidence"],
+};
+
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-pro",
+  generationConfig: {
+    responseMimeType: "application/json",
+    responseSchema: schema,
+  },
+});
+```
+
+Lisätietoja: [Gemini API Structured Output Documentation](https://ai.google.dev/gemini-api/docs/structured-output?lang=node)
+
+### Vercel AI SDK
+
+Vercel AI SDK tarjoaa myös hyvän tavan tuottaa strukturoitua dataa. Se käyttää `zod`-kirjastoa skeemojen määrittelyyn ja validointiin.
+
+Esimerkki tekstin analysoinnista:
+
+```javascript
+import { generateObject } from 'ai';
+import { openai } from '@ai-sdk/openai';
+import { z } from 'zod';
+
+const result = await generateObject({
+  model: openai('gpt-4-turbo'),
+  schema: z.object({
+    price: z.number(),
+    confidence: z.string(),
+  }),
+  prompt: 'Estimate the price of this furniture...',
+});
+```
+
+Esimerkki kuvan analysoinnista:
+
+```javascript
+import { generateObject } from 'ai';
+import { openai } from '@ai-sdk/openai';
+import { z } from 'zod';
+import fs from 'fs';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+async function analyzeFurnitureImage() {
+  const { object } = await generateObject({
+    model: openai('gpt-4o-2024-08-06'),
+    maxTokens: 512,
+    schema: z.object({
+      furniture: z.object({
+        type: z.string(),
+        material: z.string(),
+        color: z.string(),
+        estimatedPrice: z.number(),
+        condition: z.string(),
+      }),
+    }),
+    messages: [
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: 'Analyze this furniture image and provide details about it.',
+          },
+          {
+            type: 'image',
+            image: fs.readFileSync('./path/to/your/furniture/image.jpg'),
+          },
+        ],
+      },
+    ],
+  });
+
+  console.log(JSON.stringify(object, null, 2));
+}
+
+analyzeFurnitureImage();
+```
+
+Tässä esimerkissä:
+
+1. Käytämme `gpt-4o-2024-08-06` mallia, joka pystyy analysoimaan kuvia.
+2. Määrittelemme skeeman `zod`:in avulla, joka kuvaa odotettua vastausta.
+3. Lähetämme sekä tekstimuotoisen ohjeen että kuvan analysoitavaksi.
+4. Saamme takaisin strukturoidun objektin, joka sisältää tietoja huonekalusta.
+
+Huomaa, että tarvitset OpenAI API avaimen tätä esimerkkiä varten, ja sinun tulee asentaa tarvittavat riippuvuudet (`@vercel/ai`, `openai`, `zod`).
+
+Lisätietoja: [Vercel AI SDK Documentation](https://sdk.vercel.ai/docs)
+
+### Kuvien esikäsittely
+
+Kuvien esikäsittely ennen niiden lähettämistä AI-mallille voi parantaa analyysin tarkkuutta ja nopeutta. Sharp-kirjasto on erinomainen työkalu tähän tarkoitukseen.
+
+Esimerkki Sharp-kirjaston käytöstä:
+
+```javascript
+import sharp from 'sharp';
+
+const processedImage = await sharp('input.jpg')
+  .resize(800, 600)
+  .toBuffer();
+```
+
+Lisätietoja: [Sharp Documentation](https://sharp.pixelplumbing.com/)
+
+Nämä työkalut ja tekniikat voivat merkittävästi parantaa sovelluksen toiminnallisuutta ja tehokkuutta jatkokehityksessä.
+
+
+## LLM-mallien käyttö ja promptien optimointi
+
+Tässä projektissa käytetään LLM-malleja (Large Language Models) kuten Gemini ja OpenAI:n GPT-malleja. Tässä on muutamia hyödyllisiä vinkkejä näiden mallien tehokkaaseen käyttöön:
+
+### 1. Promptien suunnittelu
+
+- **Ole tarkka ja yksityiskohtainen**: Mitä tarkempi olet promptissasi, sitä parempia tuloksia saat.
+- **Kontekstin antaminen**: Anna mallille riittävästi kontekstia tehtävästä ja halutusta lopputuloksesta.
+- **Esimerkkien käyttö**: Few-shot learning -tekniikka, jossa annat mallille esimerkkejä halutusta vastauksesta, voi parantaa tuloksia huomattavasti.
+
+Esimerkki parannellusta promptista:
+
+```javascript
+const prompt = `
+Olet asiantuntija huonekalujen arvioinnissa. Analysoi seuraava huonekalu:
+Tyyppi: ${furniture.type}
+Merkki: ${furniture.brand}
+Malli: ${furniture.model}
+Materiaali: ${furniture.material}
+Kunto: ${furniture.condition}
+Ikä: ${furniture.age} vuotta
+
+Anna hinta-arvio euroina ja perustele se lyhyesti. Ota huomioon Suomen markkinatilanne.
+
+Esimerkki vastauksesta:
+Hinta-arvio: 450 €
+Perustelu: Kyseessä on hyväkuntoinen, tunnetun valmistajan tuote. Ikä ja pienet käytön jäljet laskevat hieman arvoa, mutta klassinen design pitää hinnan kohtuullisena.
+
+Anna nyt vastauksesi tästä huonekalusta:
+`;
+```
+
+### 2. Mallin valinta ja parametrit
+
+- **Mallin valinta**: Geminin ja OpenAI:n eri malleilla on erilaisia vahvuuksia. Kokeile eri malleja löytääksesi parhaiten tehtävään sopivan.
+- **Lämpötila (Temperature)**: Matalampi lämpötila (lähellä 0) tuottaa johdonmukaisempia vastauksia, korkeampi (lähellä 1) luovempia.
+- **Maksimitokenit**: Säädä tätä tarpeen mukaan, mutta muista, että pidempi vastaus ei aina ole parempi.
+
+Esimerkki mallin konfiguroinnista Geminillä:
+
+```javascript
+const model = genAI.getGenerativeModel({ 
+  model: "gemini-1.5-pro",
+  generationConfig: {
+    temperature: 0.3,
+    maxOutputTokens: 500,
+  }
+});
+```
+
+### 3. Vastausten käsittely ja validointi
+
+- **Strukturoitu data**: Pyydä mallia tuottamaan vastaukset strukturoidussa muodossa (esim. JSON) helpompaa jatkokäsittelyä varten.
+- **Validointi**: Tarkista aina mallin tuottamat vastaukset. Käytä esimerkiksi Zod-kirjastoa JSON-vastausten validointiin.
+
+### 4. Jatkuva parantaminen
+
+- **Vastausten arviointi**: Seuraa mallien suorituskykyä ja kerää palautetta käyttäjiltä.
+- **Promptien iterointi**: Hienosäädä prompteja saadun palautteen perusteella jatkuvasti.
+- **RAG (Retrieval-Augmented Generation)**: Harkitse RAG-mallin käyttöönottoa oman datan integroimiseksi LLM:n vastauksiin. Tämä on usein tehokkaampi ja joustavampi vaihtoehto kuin perinteinen fine-tuning.
+
+#### RAG-mallin käyttö
+
+RAG yhdistää tiedonhaun (retrieval) ja tekstin generoinnin, mahdollistaen LLM:n käytön yhdessä ulkoisen tietokannan kanssa. Tämä on erityisen hyödyllistä, kun haluat yhdistää yleisen LLM:n tietämyksen omaan erikoistuneeseen dataasi.
+
+RAG:in etuja:
+
+- **Ajantasaisuus**: Voit päivittää tietokantaa ilman mallin uudelleenkoulutusta.
+- **Läpinäkyvyys**: Voit jäljittää, mistä tieto on peräisin.
+- **Kustannustehokkuus**: Usein edullisempi kuin koko mallin fine-tuning.
+
+Esimerkki RAG:in implementoinnista:
+
+```javascript
+import { OpenAI } from 'langchain/llms/openai';
+import { VectorStore } from 'langchain/vectorstores/base';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+
+async function ragQuery(query, vectorStore) {
+  // 1. Hae relevantit dokumentit vektoritietokannasta
+  const relevantDocs = await vectorStore.similaritySearch(query, 3);
+
+  // 2. Muodosta konteksti relevanteista dokumenteista
+  const context = relevantDocs.map(doc => doc.pageContent).join('\n');
+
+  // 3. Luo prompti, joka yhdistää kyselyn ja kontekstin
+  const prompt = `
+  Konteksti: ${context}
+  
+  Kysymys: ${query}
+  
+  Anna vastaus perustuen annettuun kontekstiin ja yleiseen tietämykseesi.
+  `;
+
+  // 4. Lähetä prompti LLM:lle
+  const llm = new OpenAI();
+  const response = await llm.predict(prompt);
+
+  return response;
+}
+
+// Käyttöesimerkki
+const vectorStore = // ... alusta vektoritietokanta omalla datallasi
+const query = "Mikä on tyypillinen hinta Artekin jakkara 60:lle?";
+const answer = await ragQuery(query, vectorStore);
+console.log(answer);
+```
+
+Tämä lähestymistapa mahdollistaa LLM:n vastausten rikastamisen omalla datasetillasi, mikä on erityisen hyödyllistä huonekalujen hinnoittelussa ja arvioinnissa, missä markkinatilanne ja hinnat voivat vaihdella alueittain ja ajan myötä.
+
+
+Nämä vinkit auttavat sinua hyödyntämään LLM-malleja tehokkaammin projektissasi ja tuottamaan tarkempia ja luotettavampia tuloksia huonekalujen arvioinnissa.
+
+## API-hinnoittelu: Yksinkertaisia esimerkkejä
+
+Ymmärtääksemme paremmin API-kutsun kustannuksia, katsotaan muutamia käytännön esimerkkejä. Hinnat ovat suuntaa-antavia ja perustuvat GPT-4 Vision -mallin hinnoitteluun (tilanne syyskuussa 2023).
+
+### Tekstipohjainen kysely
+
+Esimerkki: Huonekalun hinta-arvio tekstikuvauksen perusteella
+
+```
+Kysely: "Anna hinta-arvio ruskealle nahkasohvalle, joka on 3 vuotta vanha ja hyvässä kunnossa."
+Vastaus: "Perustuen annettuihin tietoihin, arvioisin ruskean nahkasohvan hinnaksi noin 600-800 euroa käytettynä..."
+```
+
+Arvioitu kustannus:
+
+- Syöte: ~30 tokenia ≈ €0,0003
+- Tuloste: ~50 tokenia ≈ €0,0005
+- Yhteensä: €0,0008 (alle 0,1 senttiä)
+
+### Kuvapohjainen kysely
+
+Esimerkki: Huonekalun tunnistus ja hinta-arvio kuvan perusteella
+
+```
+[Kuva ruskeasta nahkasohvasta]
+Kysely: "Mikä huonekalu tämä on ja paljonko se voisi maksaa?"
+Vastaus: "Kuva esittää ruskeaa nahkasohvaa. Se näyttää olevan hyvässä kunnossa..."
+```
+
+Arvioitu kustannus:
+
+- Kuva (oletetaan 1024x768px): €0,00765
+- Tekstisyöte: ~10 tokenia ≈ €0,0001
+- Tuloste: ~50 tokenia ≈ €0,0005
+- Yhteensä: €0,00825 (alle 1 sentti)
+
+### Kokonaiskustannusarvio tyypilliselle käyttötapaukselle
+
+Oletetaan, että sovelluksesi analysoi 100 huonekalua päivässä, joista puolet tekstipohjaisesti ja puolet kuvapohjaisesti:
+
+- 50 tekstipohjaista kyselyä: 50 * €0,0008 = €0,04
+- 50 kuvapohjaista kyselyä: 50 * €0,00825 = €0,4125
+- Päivittäinen kokonaiskustannus: €0,4525 (noin 45 senttiä)
+
+Kuukausikustannus (30 päivää): €13,575
+
+### Huomioitavaa
+
+1. Todelliset kustannukset voivat vaihdella riippuen tarkan kyselyn ja vastauksen pituudesta sekä kuvan koosta.
+2. Suuremmilla volyymeilla voi olla mahdollista saada alennuksia.
+3. Hinnat voivat muuttua ajan myötä, joten tarkista aina viimeisimmät hinnat OpenAI:n sivustolta.
+
+Nämä esimerkit antavat yleiskuvan kustannuksista. Käytännössä kustannukset ovat usein hyvin pieniä yksittäisille kyselyille, mutta ne voivat kumuloitua suuremmiksi summiksi, kun käsitellään suuria määriä dataa.
 
