@@ -301,9 +301,9 @@ Tämä lähestymistapa mahdollistaa LLM:n vastausten rikastamisen omalla dataset
 
 Nämä vinkit auttavat sinua hyödyntämään LLM-malleja tehokkaammin projektissasi ja tuottamaan tarkempia ja luotettavampia tuloksia huonekalujen arvioinnissa.
 
-## API-hinnoittelu: Yksinkertaisia esimerkkejä
+## API-hinnoittelu: Yksinkertaisia esimerkkejä (Syyskuu 2024)
 
-Ymmärtääksemme paremmin API-kutsun kustannuksia, katsotaan muutamia käytännön esimerkkejä. Hinnat ovat suuntaa-antavia ja perustuvat GPT-4 Vision -mallin hinnoitteluun (tilanne syyskuussa 2023).
+Nämä esimerkit perustuvat GPT-4o-2024-08-06 -mallin hinnoitteluun syyskuussa 2024. Käytämme normaalia hinnoittelua, ei Batch API -hintoja.
 
 ### Tekstipohjainen kysely
 
@@ -316,9 +316,9 @@ Vastaus: "Perustuen annettuihin tietoihin, arvioisin ruskean nahkasohvan hinnaks
 
 Arvioitu kustannus:
 
-- Syöte: ~30 tokenia ≈ €0,0003
-- Tuloste: ~50 tokenia ≈ €0,0005
-- Yhteensä: €0,0008 (alle 0,1 senttiä)
+- Syöte: ~30 tokenia ≈ $0.000075 (€0.000069)
+- Tuloste: ~50 tokenia ≈ $0.0005 (€0.00046)
+- Yhteensä: $0.000575 (€0.00053) (noin 0,05 senttiä)
 
 ### Kuvapohjainen kysely
 
@@ -332,26 +332,27 @@ Vastaus: "Kuva esittää ruskeaa nahkasohvaa. Se näyttää olevan hyvässä kun
 
 Arvioitu kustannus:
 
-- Kuva (oletetaan 1024x768px): €0,00765
-- Tekstisyöte: ~10 tokenia ≈ €0,0001
-- Tuloste: ~50 tokenia ≈ €0,0005
-- Yhteensä: €0,00825 (alle 1 sentti)
+- Kuva (oletetaan 1024x768px): $0.000638 (€0.00059)
+- Tekstisyöte: ~10 tokenia ≈ $0.000025 (€0.000023)
+- Tuloste: ~50 tokenia ≈ $0.0005 (€0.00046)
+- Yhteensä: $0.001163 (€0.00107) (noin 0,1 senttiä)
 
 ### Kokonaiskustannusarvio tyypilliselle käyttötapaukselle
 
 Oletetaan, että sovelluksesi analysoi 100 huonekalua päivässä, joista puolet tekstipohjaisesti ja puolet kuvapohjaisesti:
 
-- 50 tekstipohjaista kyselyä: 50 * €0,0008 = €0,04
-- 50 kuvapohjaista kyselyä: 50 * €0,00825 = €0,4125
-- Päivittäinen kokonaiskustannus: €0,4525 (noin 45 senttiä)
+- 50 tekstipohjaista kyselyä: 50 * €0.00053 = €0.0265
+- 50 kuvapohjaista kyselyä: 50 * €0.00107 = €0.0535
+- Päivittäinen kokonaiskustannus: €0.08 (noin 8 senttiä)
 
-Kuukausikustannus (30 päivää): €13,575
+Kuukausikustannus (30 päivää): €2.40
 
 ### Huomioitavaa
 
-1. Todelliset kustannukset voivat vaihdella riippuen tarkan kyselyn ja vastauksen pituudesta sekä kuvan koosta.
-2. Suuremmilla volyymeilla voi olla mahdollista saada alennuksia.
-3. Hinnat voivat muuttua ajan myötä, joten tarkista aina viimeisimmät hinnat OpenAI:n sivustolta.
+1. Nämä hinnat perustuvat GPT-4o-2024-08-06 -malliin, joka on edullisempi kuin aiemmat versiot.
+2. Todelliset kustannukset voivat vaihdella riippuen tarkan kyselyn ja vastauksen pituudesta sekä kuvan koosta.
+3. Suuremmilla volyymeilla voi olla mahdollista käyttää Batch API -hinnoittelua, joka puolittaisi kustannukset.
+4. Hinnat voivat muuttua ajan myötä, joten tarkista aina viimeisimmät hinnat OpenAI:n sivustolta.
 
-Nämä esimerkit antavat yleiskuvan kustannuksista. Käytännössä kustannukset ovat usein hyvin pieniä yksittäisille kyselyille, mutta ne voivat kumuloitua suuremmiksi summiksi, kun käsitellään suuria määriä dataa.
+Nämä esimerkit osoittavat, että GPT-4o-mallin käyttö on suhteellisen edullista. Yksittäiset kyselyt maksavat vain murto-osia sentistä, mikä mahdollistaa laajan käytön ilman merkittäviä kustannuksia.
 
