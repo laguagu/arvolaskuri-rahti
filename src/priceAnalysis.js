@@ -1,21 +1,27 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
+import { getMockPriceEstimation } from "./utils/mockData.js";
 
 dotenv.config();
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const useMockData = false; // Aseta tämä trueksi jos haluat käyttää mock dataa testaukseen. Tätä voidaan käyttää testaukseen jotta ei kuluteta API kutsuja turhaan
 
 if (!GEMINI_API_KEY) {
   throw new Error("GEMINI_API_KEY is not set in the environment variables");
 }
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-001" }); // uusin ilmeisesti 	gemini-1.5-pro-001 vaihda tarpeen mukaan
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" }); // uusin ilmeisesti gemini-1.5-pro-001 vaihda tarpeen mukaan https://ai.google.dev/gemini-api/docs/models/gemini
 
-// Promptia kannattaa säätää ja muuttaa tarpeen mukaan. Tämä on yksinkertainen esimerkki.
-// NYt hinta tulee suoraan Geminin kautta. Liian pitkä propmt ei jaksa lukea. 😁
+// Promptia kannattaa säätää ja muuttaa tarpeen mukaan. Tämä on yksinkertainen esimerkki vanhan ryhmän esimerkki.
+// NYt hinta tulee suoraan Geminin kautta. Liian pitkä vanha propmt ei jaksa lukea 😁
 export async function estimateFurniturePrice(furnitureData) {
+  if (useMockData) {
+    return getMockPriceEstimation();
+  }
+
   try {
     const requestId = uuidv4();
 
@@ -65,7 +71,7 @@ export async function estimateFurniturePrice(furnitureData) {
     const response = await result.response;
     const text = response.text();
 
-    // Remove any potential markdown formatting
+    // Siistitään vastaus koska se on LLM mallit palauttavat useasti markdown tekstiä
     const cleanedText = text.replace(/```json\n?|\n?```/g, "").trim();
 
     try {
@@ -81,23 +87,4 @@ export async function estimateFurniturePrice(furnitureData) {
     console.error("An error occurred during price estimation:", error);
     return { error: "An unexpected error occurred during price estimation." };
   }
-}
-
-// Tätä voidaan käyttää testaukseen jotta ei kuluteta API kutsuja turhaan
-export function getExampleFurnitureFormData() {
-  return {
-    type: "Dining Table",
-    brand: "Artek",
-    model: "82B",
-    color: "Natural Birch",
-    dimensions: {
-      length: 150,
-      width: 85,
-      height: 72,
-    },
-    age: 5,
-    condition: "Good",
-    material: "Birch",
-    defects: "Minor scratches on the tabletop",
-  };
 }

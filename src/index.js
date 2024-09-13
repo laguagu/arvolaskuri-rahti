@@ -1,11 +1,17 @@
+import { analyzeImage } from "./imageAnalysis.js";
 import { estimateFurniturePrice } from "./priceAnalysis.js";
-
-// Parempi olisi käyttää typescriptiä.
+/*
+Vanhan arvolaskuri projektin esimerkki koodi käännetty node.js versioon suurin piirtein.
+TODO: Ketjuttaa analyzeImage ja estimateFurniturePrice funktiot yhteen ja alkaa rakentaa eteenpäin logiikkaa. 
+TypeScript olisi nice to have, mutta ei pakollinen.
+*/
 async function main() {
   try {
-    // Kovakoodattu esimerkki huonekalun tiedoista. Tämä tulisi frontendilta lomakkeesta tai vastaavasta.
-    // Ja tämä pitäisi lähettää backendille. Geminille ja sieltä saatu vastaus tulisi lähettää frontendille.
-
+    // Käyttäjä voi lähettää FormDatan mukana lomakkeen kenttiä LLM mallille ja lisätä ne propmptiin ja sama vice versa.
+    const analyzedImageData = await analyzeImage("./tuoli.jpg");
+    console.log("Vastaus geminin kuva analyysista: ", analyzedImageData);
+    console.log("----------------------");
+    // Kovakoodattu esimerkki huonekalun tiedoista.
     const furnitureData = {
       type: "Dining Table",
       brand: "Artek",
@@ -22,15 +28,15 @@ async function main() {
       defects: "Minor scratches on the tabletop",
     };
 
-    // Näytä kovakoodatut tiedot
-    console.log("Kovakoodatut huonekalun tiedot:");
-    console.log(JSON.stringify(furnitureData, null, 2));
-
-    // Pyydä hinta-arvio kovakoodattujen tietojen perusteella
+    console.log("Huonekalun tiedot:");
+    console.log(JSON.stringify(analyzedImageData, null, 2));
+    console.log("----------------------");
+    // Pyydä hinta-arvio
     console.log("\nPyydetään hinta-arviota...");
-    const priceEstimate = await estimateFurniturePrice(furnitureData);
+    const priceEstimate = await estimateFurniturePrice(analyzedImageData);
     console.log("Hinta-arvio:");
     console.log(JSON.stringify(priceEstimate, null, 2));
+    console.log("TODO: Palautetaan hinta-arvio käyttäjälle -->");
   } catch (error) {
     console.error("Virhe:", error);
   }
