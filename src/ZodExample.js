@@ -21,7 +21,6 @@ Analyze the furniture in the image and provide the following information:
 Important notes:
 - If you can't determine a specific detail, use "Unknown" for text fields or 0 for numeric fields.
 - Provide your best estimate for dimensions and age, even if not certain.
-- If no furniture is visible in the image, return an object with an 'error' field explaining this.
 - Ensure all text values start with a capital letter.
 `;
 // Lataa ympäristömuuttujat .env tiedostosta
