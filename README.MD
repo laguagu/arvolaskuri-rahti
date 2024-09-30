@@ -4,13 +4,16 @@ Tämä projekti on Node.js-pohjainen sovellus, joka käyttää Google Gemini AI 
 
 ## Ominaisuudet
 
-1. Huonekalujen hinta-arviointi käyttäjän syöttämien tietojen perusteella
-2. Huonekalujen tunnistus ja analysointi kuvista (ei vielä käytössä tässä versiossa)
-3. Gemini AI -mallin hyödyntäminen tietojen käsittelyssä
+1. Huonekalujen tunnistus ja analysointi kuvista
+2. Kuvan optimointi ennen analysointia
+3. Strukturoidun datan tuottaminen Zod-skeeman avulla
+4. OpenAI:n GPT-4 Vision -mallin hyödyntäminen kuva-analyysissa
+5. Gemini AI -mallin hyödyntäminen tietojen käsittelyssä
 
 ## Tiedostorakenne
 
 - `priceAnalysis.js`: Sisältää logiikan hinta-arvioiden tekemiseen Gemini AI:n avulla
+- `ZodExample.js`: Sisältää logiikan kuvien analysointiin ja datan strukturointiin
 - `imageAnalysis.js`: Sisältää logiikan kuvien analysointiin (ei käytössä tässä versiossa)
 - `index.js`: Pääsovellustiedosto, joka demonstroi hinta-arvioinnin toimintaa
 
@@ -49,6 +52,25 @@ Tämä suorittaa `index.js`-tiedoston, joka demonstroi hinta-arvioinnin toiminta
 3. `index.js`:
    - Demonstroi hinta-arvioinnin toimintaa kovakoodatulla esimerkillä
    - Tulostaa huonekalun tiedot ja saadun hinta-arvion konsoliin
+
+4. `ZodExample.js`:
+
+- `analyzeFurnitureWithZod`-funktio ottaa vastaan kuvatiedoston polun
+- Kuva optimoidaan Sharp-kirjaston avulla
+- Optimoitu kuva lähetetään OpenAI:n GPT-4 Vision -mallille analysoitavaksi
+- Analyysin tulos validoidaan ja muotoillaan Zod-skeeman avulla
+- Funktio palauttaa strukturoidun objektin, joka sisältää tiedot analysoidusta huonekalusta
+
+Zod-skeema (`FurnitureAnalysis`) määrittelee seuraavat kentät:
+
+- type: Huonekalun tyyppi
+- brand: Valmistaja tai suunnittelija
+- model: Mallinimi tai -numero
+- color: Pääväri
+- dimensions: Mitat (pituus, leveys, korkeus)
+- age: Arvioitu ikä vuosissa
+- condition: Kunto
+- haagaHelia: Onko huonekalu Haaga-Heliasta (boolean) ( Tämä on lisätty vain esimerkin vuoksi )
 
 ## Huomioitavaa
 
