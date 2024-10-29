@@ -687,7 +687,9 @@ services:
 
 ## Vaihtoehto C: Erillinen Backend API
 
-Backend toimii itsenäisenä API:na, jota frontend kutsuu:
+Backend toimii itsenäisenä API:na, jota frontend kutsuu. Huomaa, että Rahdissa ei ole valmista S2I (Source-to-Image) kuvaa React/Vite-sovelluksille, joten frontendille täytyy määritellä oma Dockerfile.
+
+### Backend setup
 
 1. Backend (index.js):
 ```javascript
@@ -712,7 +714,40 @@ app.listen(PORT, () => {
 });
 ```
 
-2. Frontend API-kutsut:
+### Frontend setup
+
+1. Lisää Dockerfile frontend-kansioon:
+```dockerfile
+# Build vaihe
+FROM node:18-alpine as build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Tuotantovaihe
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 8080
+```
+
+2. Lisää nginx.conf frontendin juureen:
+```nginx
+server {
+    listen       8080;
+    server_name  localhost;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+        try_files $uri $uri/ /index.html;
+    }
+}
+```
+
+3. Määritä API-kutsut frontendissä:
 ```javascript
 // config.js tai vastaava
 export const BACKEND_URL = import.meta.env.PROD 
@@ -725,6 +760,25 @@ const response = await fetch(`${BACKEND_URL}/api/endpoint`, {
   body: formData,
 });
 ```
+
+### Rahti deployment
+
+1. Backend:
+   - Käyttää Rahdin Node.js S2I imagea automaattisesti
+   - Vaatii vain GitHub-repon URLin
+
+2. Frontend:
+   - Luo uusi build config Rahdissa
+   - Valitse "From Dockerfile"
+   - Anna GitHub-repon URL
+   - Rahti käyttää repositoriossa olevaa Dockerfileä imagen rakentamiseen
+
+### Huomioita
+- Tämä lähestymistapa vaatii kahden erillisen buildin ja deploymentin hallinnan Rahdissa
+- Frontend tarvitsee Dockerfilen, koska Rahdilla ei ole valmista Vite/React-imagea
+- Muista määritellä CORS-asetukset backendissä oikein
+- Käytä ympäristömuuttujia API-URLien hallintaan
+- Varmista että molemmat palvelut käyttävät porttia 8080
 
 ## API-polkujen käyttö
 
