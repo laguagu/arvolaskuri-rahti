@@ -378,7 +378,7 @@ Kuukausikustannus (30 päivää): €2.40
 
 Nämä esimerkit osoittavat, että GPT-4o-mallin käyttö on suhteellisen edullista. Yksittäiset kyselyt maksavat vain murto-osia sentistä, mikä mahdollistaa laajan käytön ilman merkittäviä kustannuksia.
 
-## Ramdom tietoa | Hyödyllisiä työkaluja RAG-toteutukseen
+## Random tietoa | Hyödyllisiä työkaluja RAG-toteutukseen
 
 ### LangChain
 
