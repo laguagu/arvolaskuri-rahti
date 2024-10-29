@@ -461,7 +461,10 @@ docker run --env-file .env -p 3000:3000 sovelluksesi-nimi
 Valitse JOKO Rahti 2:n oma konttirekisteri TAI DockerHub:
 
 ### Vaihtoehto A: Rahti 2:n konttirekisteri
+
 (Käytettävissä kun ImageStream on luotu tai ensimmäinen sovellus on viety DockerHubin kautta)
+
+Lisätietoa Rahti 2:n konttirekisterin käytöstä löytyy täältä: https://docs.csc.fi/cloud/rahti2/images/Using_Rahti_2_integrated_registry/
 
 1. Kirjaudu Rahti 2:n rekisteriin:
 ```bash
