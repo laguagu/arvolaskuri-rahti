@@ -769,3 +769,64 @@ Tärkeimmät muistettavat asiat:
 1. Käytä porttia 8080 Rahdissa
 2. Määrittele API-polut oikein
 3. Huomioi CORS-asetukset tarvittaessa
+
+## Automatisointi monorepo-ympäristössä
+
+Jos pidät frontendin ja backendin samassa repositoriossa, voit automatisoida build-prosessin lisäämällä seuraavan scriptin päätason package.json tiedostoon:
+
+```json
+{
+  "scripts": {
+    "build:frontend": "cd frontend && npm install && npm run build",
+    "postbuild:frontend": "rm -rf backend/client/dist && cp -r frontend/dist backend/client/",
+    "prebuild": "npm install",
+    "build": "npm run build:frontend",
+    "start": "cd backend && npm start"
+  }
+}
+```
+
+Tämä mahdollistaa:
+1. Frontendin buildauksen
+2. Buildin automaattisen kopioinnin backend/client -kansioon
+3. Koko prosessin ajamisen yhdellä komennolla: `npm run build`
+
+### Kehitysympäristön scriptit
+
+Voit myös lisätä kehitysympäristön scriptin concurrently-paketin avulla:
+```json
+{
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.0"
+  }
+}
+```
+
+### Mitä concurrently tekee?
+
+Concurrently on hyödyllinen npm-paketti, joka mahdollistaa useiden npm-skriptien ajamisen samanaikaisesti samassa terminaalissa. Ilman sitä joutuisit:
+1. Avaamaan kaksi erillistä terminaalia
+2. Ajamaan frontendin kehityspalvelimen yhdessä (`cd frontend && npm run dev`)
+3. Ajamaan backendin kehityspalvelimen toisessa (`cd backend && npm run dev`)
+
+Concurrentlyn avulla:
+- Yksi terminaali riittää
+- `npm run dev` käynnistää molemmat palvelimet
+- Näet molempien konsolitulosteen samassa ikkunassa, esimerkiksi:
+```bash
+[frontend] Vite server running at localhost:5173
+[backend]  Server running at port 3000
+[frontend] Compiled successfully
+[backend]  Connected to database
+```
+
+### Huomioita automaatiosta
+- Varmista että kansiorakenne on oikein (frontend/ ja backend/ samassa juuressa)
+- Asenna tarvittavat riippuvuudet päätasolla: `npm install -D concurrently`
+- Muista päivittää .gitignore tiedostoa tarvittaessa
+
