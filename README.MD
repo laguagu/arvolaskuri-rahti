@@ -540,20 +540,41 @@ docker push image-registry.apps.2.rahti.csc.fi/projektisi-nimi/sovelluksesi-nimi
 - Voit määritellä Rahdissa tagi tunnisteen itse minkä perusteella auto deploy käynnistyy
 
 ### Hyödyllisiä komentoja
+
+**ImageStream ja buildit (pysyvät resurssit):**
 ```bash
 # Tarkista ImageStream ja sen tagit
 oc get imagestream
 oc describe imagestream sovelluksesi-nimi
+```
 
-# Katso podien tila ja logit
+**Podit (väliaikaiset suoritusympäristöt):**
+```bash
+# Katso podien tila
 oc get pods
+# Podit voivat olla tilassa:
+# - Running (käynnissä)
+# - Pending (käynnistymässä)
+# - CrashLoopBackOff (käynnistysongelmia)
+
+# Katso podien logit
 oc logs pods/podin-nimi
 
-# Tarkista deployment tila
+# Tarkista deployment tila (hallinnoi podeja)
 oc get deployment
 
 # Poista pod (Rahti luo automaattisesti uuden)
 oc delete pod podin-nimi
+
+# Listaa kaikki
+oc get all
+```
+
+**Huom! Podeista:**
+- Podit ovat väliaikaisia suoritusympäristöjä, jotka voivat tuhoutua ja käynnistyä uudelleen
+- Rahti hallinnoi podeja automaattisesti Deploymenttien kautta
+- Jos pod tuhoutuu, Rahti käynnistää automaattisesti uuden
+- Älä tallenna dataa podiin, sillä se häviää podin tuhoutuessa
 ```
 
 ### Yleisiä käytäntöjä
