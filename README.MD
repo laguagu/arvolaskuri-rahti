@@ -734,6 +734,17 @@ EXPOSE 8080
 CMD ["serve", "-s", "dist", "-p", "8080"]
 ```
 
+## Serve-työkalun käyttö
+
+* Dockerfilessa käytetty komento `serve -s dist` on tarkoitettu SPA-sovelluksille
+* `-s` tai `--single` lippu:
+  * Ohjaa kaikki pyynnöt index.html:ään
+  * Välttämätön SPA-reitityksen toiminnalle (React Router, Vue Router jne.)
+* **Jos sovelluksesi EI ole SPA:**
+  * Poista `-s` lippu komennosta 
+  * Käytä: `CMD ["serve", "dist", "-p", "8080"]`
+  * Soveltuu tavallisille staattisille sivuille (multi-page)
+
 2. Lisää .dockerignore frontend-kansioon:
 ```
 node_modules
