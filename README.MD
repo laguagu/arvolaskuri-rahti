@@ -416,7 +416,7 @@ RAG-mallien tehokas käyttö edellyttää usein oman erikoistuneen datan kerää
 
 Web scraping on tehokas tapa kerätä dataa, mutta huomioi, että jotkin sivustot saattavat rajoittaa tai kieltää scraping-toiminnan.
 
-# Sovelluksen julkaisu CSC Rahti 2:ssa - Pikaohje
+# Sovelluksen julkaisu CSC Rahti 2:ssa Dockerin avulla - Pikaohje
 
 ## Tärkeä huomio ennen aloitusta!
 Rahti 2:n konttirekisterin käyttöön on kaksi vaihtoehtoa:
