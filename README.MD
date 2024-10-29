@@ -510,3 +510,38 @@ Määrittele käyttöönoton yhteydessä:
 Rolling Update -asetukset:
 - Maximum unavailable Pods: 25% (tai 1)
 - Maximum surge Pods: 25% (tai 1)
+
+## Hyödyllisiä vinkkejä Rahti/Docker ympäristöön
+
+### Tagien käyttö
+Rahti rakentaa kuvan määritellyn tagin perusteella. Voit määritellä tagin itse:
+```bash
+# Esimerkki uuden version julkaisusta tietyllä tagilla
+docker tag sovelluksesi-nimi image-registry.apps.2.rahti.csc.fi/projektisi-nimi/sovelluksesi-nimi:v1.0.0
+docker push image-registry.apps.2.rahti.csc.fi/projektisi-nimi/sovelluksesi-nimi:v1.0.0
+```
+- Jos käytät `:latest` tagia, Rahti rakentaa aina uuden kuvan kun työnnät uuden version
+- Voit määritellä Rahdissa tagi tunnisteen itse minkä perusteella auto deploy käynnistyy
+
+### Hyödyllisiä komentoja
+```bash
+# Tarkista ImageStream ja sen tagit
+oc get imagestream
+oc describe imagestream sovelluksesi-nimi
+
+# Katso podien tila ja logit
+oc get pods
+oc logs pods/podin-nimi
+
+# Tarkista deployment tila
+oc get deployment
+
+# Poista pod (Rahti luo automaattisesti uuden)
+oc delete pod podin-nimi
+```
+
+### Yleisiä käytäntöjä
+1. Testaa ympäristömuuttujat huolellisesti ennen tuotantoon vientiä
+2. Tarkista sovelluksen logit käyttöönoton jälkeen
+3. Käytä "Auto deploy" -ominaisuutta harkiten tuotantoympäristössä
+4. Pidä image mahdollisimman pienenä (käytä .dockerignore)
