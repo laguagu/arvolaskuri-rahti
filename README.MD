@@ -415,3 +415,98 @@ RAG-mallien tehokas käyttö edellyttää usein oman erikoistuneen datan kerää
   - Puppeteer: Googlen kehittämä työkalu, joka mahdollistaa selainpohjaisen scrapingin
 
 Web scraping on tehokas tapa kerätä dataa, mutta huomioi, että jotkin sivustot saattavat rajoittaa tai kieltää scraping-toiminnan.
+
+# Sovelluksen julkaisu CSC Rahti 2:ssa - Pikaohje
+
+## Tärkeä huomio ennen aloitusta!
+Rahti 2:n konttirekisterin käyttöön on kaksi vaihtoehtoa:
+1. Luo ImageStream manuaalisesti projektiisi (ohjeet alla)
+2. TAI vie ensimmäinen sovellus DockerHubin kautta:
+   - Käytä DockerHub-rekisteriä ensimmäisessä julkaisussa
+   - Rahti luo onnistuneen julkaisun jälkeen automaattisesti ImageStreamin sovelluksellesi
+   - Tämän jälkeen voit siirtyä käyttämään Rahdin omaa konttirekisteriä
+   - ImageStream löytyy Builds → ImageStreams -valikosta
+
+## 1. Kirjautuminen Rahtiin
+
+1. Mene Rahti 2:n web-käyttöliittymään
+2. Klikkaa oikeasta yläkulmasta "Copy login command"
+3. Kopioi ja suorita kirjautumiskomento terminaalissa:
+```bash
+oc login --token=sha256~[sinun-tokenisi] --server=https://api.2.rahti.csc.fi:6443
+```
+
+## 2. Kontin rakennus ja testaus
+
+1. Rakenna Docker-image:
+```bash
+# Peruskomento
+docker build -t sovelluksesi-nimi .
+
+# TAI jos haluat välttää välimuistin käyttöä (valinnainen)
+docker build --no-cache -t sovelluksesi-nimi .
+```
+
+2. Testaa paikallisesti (valinnainen vaihe):
+```bash
+# Ilman ympäristömuuttujia
+docker run -p 3000:3000 sovelluksesi-nimi
+
+# Ympäristömuuttujien kanssa
+docker run --env-file .env.local -p 3000:3000 sovelluksesi-nimi
+```
+
+## 3. Imagen vienti rekisteriin
+
+Valitse JOKO Rahti 2:n oma konttirekisteri TAI DockerHub:
+
+### Vaihtoehto A: Rahti 2:n konttirekisteri
+(Käytettävissä kun ImageStream on luotu tai ensimmäinen sovellus on viety DockerHubin kautta)
+
+1. Kirjaudu Rahti 2:n rekisteriin:
+```bash
+docker login -u unused -p $(oc whoami -t) image-registry.apps.2.rahti.csc.fi
+```
+
+2. Tagaa ja työnnä image:
+```bash
+docker tag sovelluksesi-nimi image-registry.apps.2.rahti.csc.fi/projektisi-nimi/sovelluksesi-nimi:latest
+docker push image-registry.apps.2.rahti.csc.fi/projektisi-nimi/sovelluksesi-nimi:latest
+```
+
+### Vaihtoehto B: DockerHub
+```bash
+docker tag sovelluksesi-nimi käyttäjätunnus/sovelluksesi-nimi:latest
+docker push käyttäjätunnus/sovelluksesi-nimi:latest
+```
+
+## 4. Sovelluksen käyttöönotto Rahti 2:ssa
+
+### Vaihtoehto 1: Suora käyttöönotto konttirekisteristä
+1. Siirry Rahti 2:n web-konsoliin ja projektiisi
+2. Valitse "Add" → "Container images"
+3. Valitse "Deploy an existing Image from an Image registry or Image stream tag"
+4. Valitse konttirekisteristä haluamasi image
+
+### Vaihtoehto 2: ImageStream luonti ja käyttö
+1. Siirry Builds → ImageStreams → Create ImageStream
+2. Luo ImageStream:
+```yaml
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: sovelluksesi-nimi
+  namespace: projektisi-nimi
+```
+3. Käytä luotua ImageStreamia sovelluksen käyttöönotossa
+
+## 5. Deployment-asetukset
+
+Määrittele käyttöönoton yhteydessä:
+- **Deployment strategy**: Rolling Update
+- **Auto deploy**: Kytke päälle "Auto deploy when new Image is available"
+- **Environment Variables**: Lisää tarvittavat ympäristömuuttujat Name/Value -pareina
+
+Rolling Update -asetukset:
+- Maximum unavailable Pods: 25% (tai 1)
+- Maximum surge Pods: 25% (tai 1)
