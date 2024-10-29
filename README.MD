@@ -590,9 +590,9 @@ oc get all
 
 Tämä ohje kattaa kolme eri tapaa julkaista React (Vite) + Node.js sovellus Rahdissa.
 
-## Vaihtoehto A: Yksinkertainen ratkaisu (ilman Dockeria)
+## Vaihtoehto A: Yksinkertainen ratkaisu (ilman erillistä DockerFileä)
 
-Tämä on helpoin tapa, jos et halua käyttää Dockeria:
+Tämä on helpoin tapa, jos et halua käyttää Dockeria itse vaan antaa Rahdin hoitaa kontituksen:
 
 1. Tee React-sovelluksen build:
 ```bash
