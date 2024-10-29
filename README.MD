@@ -754,10 +754,9 @@ const response = await fetch(`${BACKEND_URL}/api/endpoint`, {
 ```
 
 ### Huomioita
+- TÄRKEÄÄ: Suojaa API-reitit asianmukaisesti (esim. API-avain (VITE_API_KEY esimerkissä), JWT token)
 - Määritä rahtiin ympäristömuuttujat VITE_BACKEND_URL=https://backend-projektisi.rahtiapp.fi VITE_API_KEY=your-secret-api-key
-- TÄRKEÄÄ: Suojaa API-reitit asianmukaisesti (esim. API-avain, JWT token)
-- Frontend käyttää porttia 8080 (Rahdin vaatimus)
-- Backend URL määritellään ympäristömuuttujassa
+- Frontend käyttää porttia 8080 (Rahdin vaatimus tässä esimerkissä)
 - CORS-asetusten pitää sallia frontend URL
 - Rahti luo automaattisesti julkisen URL:n frontendille
 
@@ -771,7 +770,7 @@ A. **Yksinkertainen ratkaisu**: Vie Vite build backendiin
    - Kaikki yhdessä palvelussa
 
 B. **Docker-ratkaisu**: Yhdistä frontend ja backend
-   - Monirepo-lähestymistapa
+   - Monorepo-lähestymistapa
    - Helppo ylläpitää
    - Hyvä kehitysympäristö
 
@@ -781,7 +780,7 @@ C. **Erillinen API**: Pidä frontend ja backend erillään
    - Vaatii CORS-konfiguraation
 
 Tärkeimmät muistettavat asiat:
-1. Käytä porttia 8080 Rahdissa
+1. Käytä oikeaa porttia Rahdissa. Tässä esimerkissä 8080
 2. Määrittele API-polut oikein
 3. Huomioi CORS-asetukset tarvittaessa
 
