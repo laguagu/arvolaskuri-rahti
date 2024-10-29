@@ -687,20 +687,19 @@ services:
 
 ## Vaihtoehto C: Erillinen Backend API
 
-Backend toimii itsenäisenä API:na, jota frontend kutsuu. Huomaa, että Rahdissa ei ole valmista S2I (Source-to-Image) kuvaa React/Vite-sovelluksille, joten frontendille täytyy määritellä oma Dockerfile.
+Backend toimii itsenäisenä API:na, frontend tarvitsee oman Dockerfilen. Backend pyörii jo Rahdissa, ja haluat vain kontittaa Vite-sovelluksen ja kutsua backend API:a.
 
-### Backend setup
-
-1. Backend (index.js):
+### 1. Backend API:n käyttö
+Backend toimii jo Rahdissa (esim. URL: https://backend-projektisi.rahtiapp.fi):
 ```javascript
 const express = require('express');
 const cors = require('cors');
 const app = require('./app');
 require('dotenv').config();
 
-// CORS asetukset
+// CORS asetukset - lisää frontend URL
 app.use(cors({
-  origin: ['https://your-frontend-url.com']  // Lisää frontendin URL
+  origin: ['https://frontend-projektisi.rahtiapp.fi']
 }));
 
 // API reitit...
@@ -714,12 +713,12 @@ app.listen(PORT, () => {
 });
 ```
 
-### Frontend setup
+### 2. Frontend setup (Vite)
 
 1. Lisää Dockerfile frontend-kansioon:
 ```dockerfile
 # Build vaihe
-FROM node:18-alpine as build
+FROM node:18-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
@@ -727,32 +726,25 @@ COPY . .
 RUN npm run build
 
 # Tuotantovaihe
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+FROM node:18-alpine
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
+RUN npm install -g serve
 EXPOSE 8080
+CMD ["serve", "-s", "dist", "-p", "8080"]
 ```
 
-2. Lisää nginx.conf frontendin juureen:
-```nginx
-server {
-    listen       8080;
-    server_name  localhost;
-
-    location / {
-        root   /usr/share/nginx/html;
-        index  index.html index.htm;
-        try_files $uri $uri/ /index.html;
-    }
-}
+2. Lisää .dockerignore frontend-kansioon:
+```
+node_modules
+dist
+.env
 ```
 
-3. Määritä API-kutsut frontendissä:
+3. Määritä backendin URL frontendissä:
 ```javascript
-// config.js tai vastaava
-export const BACKEND_URL = import.meta.env.PROD 
-  ? 'https://your-backend-url.rahtiapp.fi'
-  : 'http://localhost:8080';
+// src/config.js
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 
 // Käyttö komponenteissa
 const response = await fetch(`${BACKEND_URL}/api/endpoint`, {
@@ -761,44 +753,13 @@ const response = await fetch(`${BACKEND_URL}/api/endpoint`, {
 });
 ```
 
-### Rahti deployment
-
-1. Backend:
-   - Käyttää Rahdin Node.js S2I imagea automaattisesti
-   - Vaatii vain GitHub-repon URLin
-
-2. Frontend:
-   - Luo uusi build config Rahdissa
-   - Valitse "From Dockerfile"
-   - Anna GitHub-repon URL
-   - Rahti käyttää repositoriossa olevaa Dockerfileä imagen rakentamiseen
-
 ### Huomioita
-- Tämä lähestymistapa vaatii kahden erillisen buildin ja deploymentin hallinnan Rahdissa
-- Frontend tarvitsee Dockerfilen, koska Rahdilla ei ole valmista Vite/React-imagea
-- Muista määritellä CORS-asetukset backendissä oikein
-- Käytä ympäristömuuttujia API-URLien hallintaan
-- Varmista että molemmat palvelut käyttävät porttia 8080
-
-## API-polkujen käyttö
-
-### Yhdistetyssä ratkaisussa (Vaihtoehdot A ja B):
-```javascript
-// Käytä suhteellisia polkuja
-const response = await fetch("/api/endpoint", {
-  method: "POST",
-  body: formData,
-});
-```
-
-### Erillisessä API-ratkaisussa (Vaihtoehto C):
-```javascript
-// Käytä täyttä URL:ia konfiguraatiosta
-const response = await fetch(`${BACKEND_URL}/api/endpoint`, {
-  method: "POST",
-  body: formData,
-});
-```
+- Määritä rahtiin ympäristömuuttujat VITE_BACKEND_URL=https://backend-projektisi.rahtiapp.fi VITE_API_KEY=your-secret-api-key
+- TÄRKEÄÄ: Suojaa API-reitit asianmukaisesti (esim. API-avain, JWT token)
+- Frontend käyttää porttia 8080 (Rahdin vaatimus)
+- Backend URL määritellään ympäristömuuttujassa
+- CORS-asetusten pitää sallia frontend URL
+- Rahti luo automaattisesti julkisen URL:n frontendille
 
 ## Yhteenveto ja huomioita
 
@@ -823,6 +784,26 @@ Tärkeimmät muistettavat asiat:
 1. Käytä porttia 8080 Rahdissa
 2. Määrittele API-polut oikein
 3. Huomioi CORS-asetukset tarvittaessa
+
+## API-polkujen käyttö
+
+### Yhdistetyssä ratkaisussa (Vaihtoehdot A ja B):
+```javascript
+// Käytä suhteellisia polkuja
+const response = await fetch("/api/endpoint", {
+  method: "POST",
+  body: formData,
+});
+```
+
+### Erillisessä API-ratkaisussa (Vaihtoehto C):
+```javascript
+// Käytä täyttä URL:ia konfiguraatiosta
+const response = await fetch(`${BACKEND_URL}/api/endpoint`, {
+  method: "POST",
+  body: formData,
+});
+```
 
 ## Automatisointi monorepo-ympäristössä
 
