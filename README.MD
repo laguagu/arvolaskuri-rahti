@@ -527,10 +527,6 @@ Määrittele käyttöönoton yhteydessä:
 - **Auto deploy**: Kytke päälle "Auto deploy when new Image is available"
 - **Environment Variables**: Lisää tarvittavat ympäristömuuttujat Name/Value -pareina
 
-Rolling Update -asetukset:
-- Maximum unavailable Pods: 25% (tai 1)
-- Maximum surge Pods: 25% (tai 1)
-
 ## Hyödyllisiä vinkkejä Rahti/Docker ympäristöön
 
 ### Tagien käyttö
