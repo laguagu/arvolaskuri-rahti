@@ -687,7 +687,7 @@ services:
 
 ## Vaihtoehto C: Erillinen Backend API
 
-Backend toimii itsenäisenä API:na, frontend tarvitsee oman Dockerfilen. Backend pyörii jo Rahdissa, ja haluat vain kontittaa Vite-sovelluksen ja kutsua backend API:a.
+Backend toimii itsenäisenä API:na Rahdin Node.js samplen avulla rakennettuna. Frontend tarvitsee oman Dockerfilen, jos haluat vain kontittaa Vite-sovelluksen ja kutsua backend API:a.
 
 ### 1. Backend API:n käyttö
 Backend toimii jo Rahdissa (esim. URL: https://backend-projektisi.rahtiapp.fi):
