@@ -813,20 +813,3 @@ Concurrently on hyödyllinen npm-paketti, joka mahdollistaa useiden npm-skriptie
 1. Avaamaan kaksi erillistä terminaalia
 2. Ajamaan frontendin kehityspalvelimen yhdessä (`cd frontend && npm run dev`)
 3. Ajamaan backendin kehityspalvelimen toisessa (`cd backend && npm run dev`)
-
-Concurrentlyn avulla:
-- Yksi terminaali riittää
-- `npm run dev` käynnistää molemmat palvelimet
-- Näet molempien konsolitulosteen samassa ikkunassa, esimerkiksi:
-```bash
-[frontend] Vite server running at localhost:5173
-[backend]  Server running at port 3000
-[frontend] Compiled successfully
-[backend]  Connected to database
-```
-
-### Huomioita automaatiosta
-- Varmista että kansiorakenne on oikein (frontend/ ja backend/ samassa juuressa)
-- Asenna tarvittavat riippuvuudet päätasolla: `npm install -D concurrently`
-- Muista päivittää .gitignore tiedostoa tarvittaessa
-
