@@ -734,7 +734,7 @@ EXPOSE 8080
 CMD ["serve", "-s", "dist", "-p", "8080"]
 ```
 
-## Serve-työkalun käyttö
+### Serve-työkalun käyttö
 
 * Dockerfilessa käytetty komento `serve -s dist` on tarkoitettu SPA-sovelluksille
 * `-s` tai `--single` lippu:
