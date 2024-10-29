@@ -453,7 +453,7 @@ docker build --no-cache -t sovelluksesi-nimi .
 docker run -p 3000:3000 sovelluksesi-nimi
 
 # Ympäristömuuttujien kanssa
-docker run --env-file .env.local -p 3000:3000 sovelluksesi-nimi
+docker run --env-file .env -p 3000:3000 sovelluksesi-nimi
 ```
 
 ## 3. Imagen vienti rekisteriin
