@@ -578,7 +578,6 @@ oc get all
 - Rahti hallinnoi podeja automaattisesti Deploymenttien kautta
 - Jos pod tuhoutuu, Rahti käynnistää automaattisesti uuden
 - Älä tallenna dataa podiin, sillä se häviää podin tuhoutuessa
-```
 
 ### Yleisiä käytäntöjä
 1. Testaa ympäristömuuttujat ennen tuotantoon vientiä
