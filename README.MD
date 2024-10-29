@@ -754,13 +754,22 @@ const response = await fetch(`${BACKEND_URL}/api/endpoint`, {
 ```
 
 ### Huomioita
-- TÄRKEÄÄ: Suojaa API-reitit asianmukaisesti (esim. API-avain (VITE_API_KEY esimerkissä), JWT token)
-- Määritä rahtiin ympäristömuuttujat VITE_BACKEND_URL=https://backend-projektisi.rahtiapp.fi VITE_API_KEY=your-secret-api-key
 - Frontend käyttää porttia 8080 (Rahdin vaatimus tässä esimerkissä)
 - CORS-asetusten pitää sallia frontend URL
 - Rahti luo automaattisesti julkisen URL:n frontendille
 
-## Yhteenveto ja huomioita
+### Ympäristömuuttujat ja Tietoturva
+- **API-reittien suojaus:** Käytä aina asianmukaista suojausta
+  - API-avain (VITE_API_KEY)
+  - JWT token
+  - Muut autentikaatiomenetelmät
+
+```env
+VITE_BACKEND_URL=https://backend-projektisi.rahtiapp.fi
+VITE_API_KEY=your-secret-api-key
+```
+
+## Yhteenveto
 
 Valitse ratkaisu tarpeidesi mukaan:
 
