@@ -578,7 +578,6 @@ oc get all
 ```
 
 ### Yleisiä käytäntöjä
-1. Testaa ympäristömuuttujat huolellisesti ennen tuotantoon vientiä
+1. Testaa ympäristömuuttujat ennen tuotantoon vientiä
 2. Tarkista sovelluksen logit käyttöönoton jälkeen
-3. Käytä "Auto deploy" -ominaisuutta harkiten tuotantoympäristössä
-4. Pidä image mahdollisimman pienenä (käytä .dockerignore)
+3. Pidä image mahdollisimman pienenä (käytä .dockerignore)
