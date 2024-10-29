@@ -485,8 +485,28 @@ docker push käyttäjätunnus/sovelluksesi-nimi:latest
 ### Vaihtoehto 1: Suora käyttöönotto konttirekisteristä
 1. Siirry Rahti 2:n web-konsoliin ja projektiisi
 2. Valitse "Add" → "Container images"
-3. Valitse "Deploy an existing Image from an Image registry or Image stream tag"
-4. Valitse konttirekisteristä haluamasi image
+3. "Deploy Image" -näkymässä:
+   
+   **Image-asetukset:**
+   - Valitse "Deploy an existing Image from an Image Stream or Image registry"
+   - Käytä joko:
+     - **DockerHub image**: Syötä suoraan muodossa `käyttäjätunnus/sovellus:latest` (esim. `laguagu/alya:latest`)
+     - TAI **Rahti registry**: Valitse sisäisestä rekisteristä
+   
+   **Huom DockerHub yksityiset kuvat:**
+   - Jos käytät yksityistä DockerHub-kuvaa, sinun täytyy luoda "Image pull secret"
+   - Määritä secret name, registry (docker.io), käyttäjätunnus ja salasana
+   - Julkisille kuville tätä ei tarvita
+
+   **Yleiset asetukset:**
+   - **Application**: Valitse/luo sovelluskokoonpano (esim. "alya-avustaja")
+   - **Name**: Anna komponentille uniikki nimi
+   - **Target port**: Määritä portti, jossa sovelluksesi kuuntelee (esim. 3000)
+
+Rahti luo automaattisesti julkisen URL-osoitteen sovelluksellesi oletusasetuksilla:
+- Generoi automaattisesti hostnamen
+- Käyttää Edge TLS-terminointia
+- Ohjaa HTTP-liikenteen HTTPS:ään
 
 ### Vaihtoehto 2: ImageStream luonti ja käyttö
 1. Siirry Builds → ImageStreams → Create ImageStream
