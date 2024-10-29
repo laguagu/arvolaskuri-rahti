@@ -430,7 +430,7 @@ Rahti 2:n konttirekisterin käyttöön on kaksi vaihtoehtoa:
 ## 1. Kirjautuminen Rahtiin
 
 1. Mene Rahti 2:n web-käyttöliittymään
-2. Klikkaa oikeasta yläkulmasta "Copy login command"
+2. Klikkaa oikeasta yläkulmasta nimeäsi -> "Copy login command"
 3. Kopioi ja suorita kirjautumiskomento terminaalissa:
 ```bash
 oc login --token=sha256~[sinun-tokenisi] --server=https://api.2.rahti.csc.fi:6443
