@@ -584,3 +584,183 @@ oc get all
 1. Testaa ympäristömuuttujat ennen tuotantoon vientiä
 2. Tarkista sovelluksen logit käyttöönoton jälkeen
 3. Pidä image mahdollisimman pienenä (käytä .dockerignore)
+
+# React (Vite) + Node.js sovelluksen julkaisu Rahtiin
+
+> **HUOM!** Tämä ohje sisältää teoreettisia ratkaisuvaihtoehtoja, joita ei ole vielä täysin testattu tuotantoympäristössä. Periaatteet ovat oikein, mutta yksityiskohdissa voi olla tarvetta hienosäätöön. Käytä tätä ohjetta pohjana ja muokkaa tarvittaessa omaan käyttöösi sopivaksi.
+
+Tämä ohje kattaa kolme eri tapaa julkaista React (Vite) + Node.js sovellus Rahdissa.
+
+## Vaihtoehto A: Yksinkertainen ratkaisu (ilman Dockeria)
+
+Tämä on helpoin tapa, jos et halua käyttää Dockeria:
+
+1. Tee React-sovelluksen build:
+```bash
+cd frontend-repo
+npm run build
+```
+
+2. Valmistele backend:
+```bash
+cd backend-repo
+mkdir client      # Luo kansio frontend buildille
+```
+
+3. Kopioi frontend build backendiin:
+- Kopioi `frontend-repo/dist` -kansio `backend-repo/client/dist` -kansioon
+
+4. Muokkaa backend/index.js:
+```javascript
+const express = require('express');
+const path = require('path');
+const app = require('./app');
+require('dotenv').config();
+
+// Lisää tämä: frontend buildin tarjoilu
+app.use(express.static(path.join(__dirname, 'client/dist')));
+
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+
+## Vaihtoehto B: Docker Compose (monorepo-ratkaisu)
+
+1. Projektirakenne:
+```
+project/
+├── backend/
+│   ├── index.js
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   └── package.json
+├── docker-compose.yml
+└── Dockerfile
+```
+
+2. Dockerfile:
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+
+# Kopioi package.json tiedostot
+COPY package*.json ./
+COPY frontend/package*.json ./frontend/
+COPY backend/package*.json ./backend/
+
+# Asenna riippuvuudet
+RUN npm install
+RUN cd frontend && npm install
+RUN cd backend && npm install
+
+# Kopioi ja buildaa
+COPY . .
+RUN cd frontend && npm run build
+RUN mkdir -p backend/client
+RUN cp -r frontend/dist backend/client/
+
+EXPOSE 8080
+CMD ["node", "backend/index.js"]
+```
+
+3. docker-compose.yml:
+```yaml
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - OPENAI_KEY=your_key_here
+```
+
+## Vaihtoehto C: Erillinen Backend API
+
+Backend toimii itsenäisenä API:na, jota frontend kutsuu:
+
+1. Backend (index.js):
+```javascript
+const express = require('express');
+const cors = require('cors');
+const app = require('./app');
+require('dotenv').config();
+
+// CORS asetukset
+app.use(cors({
+  origin: ['https://your-frontend-url.com']  // Lisää frontendin URL
+}));
+
+// API reitit...
+app.get('/api/status', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+
+2. Frontend API-kutsut:
+```javascript
+// config.js tai vastaava
+export const BACKEND_URL = import.meta.env.PROD 
+  ? 'https://your-backend-url.rahtiapp.fi'
+  : 'http://localhost:8080';
+
+// Käyttö komponenteissa
+const response = await fetch(`${BACKEND_URL}/api/endpoint`, {
+  method: "POST",
+  body: formData,
+});
+```
+
+## API-polkujen käyttö
+
+### Yhdistetyssä ratkaisussa (Vaihtoehdot A ja B):
+```javascript
+// Käytä suhteellisia polkuja
+const response = await fetch("/api/endpoint", {
+  method: "POST",
+  body: formData,
+});
+```
+
+### Erillisessä API-ratkaisussa (Vaihtoehto C):
+```javascript
+// Käytä täyttä URL:ia konfiguraatiosta
+const response = await fetch(`${BACKEND_URL}/api/endpoint`, {
+  method: "POST",
+  body: formData,
+});
+```
+
+## Yhteenveto ja huomioita
+
+Valitse ratkaisu tarpeidesi mukaan:
+
+A. **Yksinkertainen ratkaisu**: Vie Vite build backendiin
+   - Helpoin toteuttaa
+   - Ei vaadi Dockeria
+   - Kaikki yhdessä palvelussa
+
+B. **Docker-ratkaisu**: Yhdistä frontend ja backend
+   - Monirepo-lähestymistapa
+   - Helppo ylläpitää
+   - Hyvä kehitysympäristö
+
+C. **Erillinen API**: Pidä frontend ja backend erillään
+   - Selkeä jako palveluiden välillä
+   - Skaalautuu hyvin
+   - Vaatii CORS-konfiguraation
+
+Tärkeimmät muistettavat asiat:
+1. Käytä porttia 8080 Rahdissa
+2. Määrittele API-polut oikein
+3. Huomioi CORS-asetukset tarvittaessa
