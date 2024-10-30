@@ -826,6 +826,7 @@ const response = await fetch(`${BACKEND_URL}/api/endpoint`, {
 
 ## Automatisointi monorepo-ympäristössä
 
+```
 monorepo/
 ├── package.json           # Päätason package.json
 ├── node_modules/
@@ -838,6 +839,7 @@ monorepo/
     ├── src/
     └── client/          # Frontend build kopioidaan tänne
         └── dist/
+```
 
 Jos pidät frontendin ja backendin samassa repositoriossa, voit automatisoida build-prosessin lisäämällä seuraavan scriptin päätason package.json tiedostoon:
 
