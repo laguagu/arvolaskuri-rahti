@@ -616,12 +616,18 @@ const path = require('path');
 const app = require('./app');
 require('dotenv').config();
 
-// Lisää tämä: frontend buildin tarjoilu
+// Frontend buildin tarjoilu
 app.use(express.static(path.join(__dirname, 'client/dist')));
+
+// Tämä pitää olla API-reittien jälkeen
+// Handlaa client-side reitityksen
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
+});
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });
 ```
 
@@ -718,15 +724,15 @@ app.listen(PORT, () => {
 1. Lisää Dockerfile frontend-kansioon:
 ```dockerfile
 # Build vaihe
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 RUN npm run build
 
 # Tuotantovaihe
-FROM node:18-alpine
+FROM node:20-alpine
 WORKDIR /app
 COPY --from=builder /app/dist ./dist
 RUN npm install -g serve
