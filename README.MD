@@ -402,7 +402,7 @@ LangChainin avulla voit helposti yhdistää eri LLM-malleja, tietokantoja ja mui
 
 ### Supabase
 
-Supabase on avoimen lähdekoodin Backend-as-a-Service (BaaS) alusta, joka tarjoaa myös vektoritietokantaominaisuuksia. Se on rakennettu PostgreSQL:n päälle ja tarjoaa ilmaisen tason kehittäjille. Supabasen vektoritietokanta-ominaisuudet tekevät siitä houkuttelevan vaihtoehdon RAG-toteutuksiin:
+Supabase on avoimen lähdekoodin Backend-as-a-Service (BaaS) alusta, joka tarjoaa myös vektoritietokantaominaisuuksia. Se on rakennettu PostgreSQL:n päälle ja tarjoaa ilmaisen tason kehittäjille. Supabasen vektoritietokanta-ominaisuudet tekevät siitä hyvän vaihtoehdon RAG-toteutuksiin:
 
 - Helppo integroida olemassa oleviin sovelluksiin
 - Tuki pgvector-laajennukselle, mikä mahdollistaa tehokkaan vektorihakujen
