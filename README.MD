@@ -767,7 +767,7 @@ app.listen(PORT, () => {
 ```
 
 **Huom!** 
-- Kun käynnistät sovelluksen `npm start` komennolla, sekä backend että frontend pyörivät samassa portissa (8080)
+- Kun käynnistät sovelluksen `npm start` komennolla (oletus että tämä käynnistää sinun backend serverin), sekä backend että frontend pyörivät samassa portissa (8080)
 - Frontend build on staattista sisältöä, jota backend tarjoilee
 - Ei tarvetta erilliselle frontend-palvelimelle
 - Kaikki API-kutsut menevät samaan osoitteeseen missä frontend pyörii
