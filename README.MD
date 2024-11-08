@@ -640,6 +640,8 @@ strategy:
 ```
 https://api.2.rahti.csc.fi:6443/apis/build.openshift.io/v1/namespaces/<projekti>/buildconfigs/<buildconfig>/webhooks/<secret>/github
 ```
+> Voit kopioda URL osoitteen Rahdin käyttöliittymästä Webhooks -> "Copy URL with Secret"
+
 * Content type: `application/json`
 * Secret: Sama kuin URL:ssä oleva secret
 * SSL verification: Enable
