@@ -563,7 +563,7 @@ Valitse lähestymistapa sovelluksesi vaatimusten mukaan. Jos et ole varma, aloit
 ## Sisällysluettelo
 1. [SSH-avaimen luonti ja konfigurointi](#ssh-avaimen-luonti-ja-konfigurointi)
 2. [Rahdin konfigurointi](#rahdin-konfigurointi)
-3. [Dockerfile konfigurointi (valinnainen)](#dockerfile-konfigurointi)
+3. [Dockerfile konfigurointi (valinnainen)](#dockerfile-konfigurointi-valinnainen)
 4. [Webhook määrittely](#webhook-määrittely)
 
 ## SSH-avaimen luonti ja konfigurointi
