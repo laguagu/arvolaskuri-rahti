@@ -562,7 +562,7 @@ Voit valita kahdesta lähestymistavasta:
 
 2. **Käytä omaa Dockerfilea (joustavampi):**
    - Tarvitaan jos sovelluksella on erityisvaatimuksia
-   - Vaaditaan esimerkiksi React Viten tai Next.js:n kanssa
+   - Vaaditaan esimerkiksi React Viten kanssa
    - Antaa täyden kontrollin build-prosessiin
    - Vaatii kaksivaiheisen setupin:
      1. Luo ensin projekti käyttäen Rahdin valmista Builder Imagea
