@@ -1016,10 +1016,3 @@ Voit myös lisätä kehitysympäristön scriptin concurrently-paketin avulla:
   }
 }
 ```
-
-### Mitä concurrently tekee?
-
-Concurrently on hyödyllinen npm-paketti, joka mahdollistaa useiden npm-skriptien ajamisen samanaikaisesti samassa terminaalissa. Ilman sitä joutuisit:
-1. Avaamaan kaksi erillistä terminaalia
-2. Ajamaan frontendin kehityspalvelimen yhdessä (`cd frontend && npm run dev`)
-3. Ajamaan backendin kehityspalvelimen toisessa (`cd backend && npm run dev`)
