@@ -8,7 +8,7 @@
 4. [LLM-mallien käyttö ja promptien optimointi](#llm-mallien-käyttö-ja-promptien-optimointi)
 5. [API-hinnoittelu](#api-hinnoittelu-yksinkertaisia-esimerkkejä-syyskuu-2024)
 6. [Hyödyllisiä työkaluja RAG-toteutukseen](#hyödyllisiä-työkaluja-rag-toteutukseen)
-7. [Sovelluksen julkaisu CSC Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-dockerin-avulla---pikaohje)
+7. [Sovelluksen julkaisu CSC Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-dockerin-avulla---yksinkertainen-ohje)
 8. [GitHub-integraatio Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-github-integraatiolla)
 9. [React (Vite) + Node.js sovelluksen tuotanto versiot](#react-vite--nodejs-sovelluksen-tuotanto-versiot)
 
@@ -426,7 +426,7 @@ RAG-mallien tehokas käyttö edellyttää usein oman erikoistuneen datan kerää
 
 Web scraping on tehokas tapa kerätä dataa, mutta huomioi, että jotkin sivustot saattavat rajoittaa tai kieltää scraping-toiminnan.
 
-# Sovelluksen julkaisu CSC Rahti 2:ssa Dockerin avulla - Pikaohje
+# Sovelluksen julkaisu CSC Rahti 2:ssa Dockerin avulla - Yksinkertainen ohje
 
 ## Tärkeä huomio ennen aloitusta!
 Rahti 2:n konttirekisterin käyttöön on kaksi vaihtoehtoa:
