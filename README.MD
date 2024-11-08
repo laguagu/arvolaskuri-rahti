@@ -532,7 +532,9 @@ Määrittele käyttöönoton yhteydessä:
 
 # Sovelluksen julkaisu CSC Rahti 2:ssa GitHub-integraatiolla
 
-Tämä ohje kattaa sovelluksen julkaisun Rahti 2:ssa käyttäen GitHub-integraatiota (BuildConfig) ja webhookkeja automaattiseen päivitykseen.
+Tämä ohje kattaa:
+- Sovelluksen julkaisun Rahti 2:ssa käyttäen GitHub-integraatiota (BuildConfig)
+- Automaattisen build-prosessin konfiguroinnin GitHub webhookin avulla
 
 ## Tärkeä huomautus (8.11.2024)
 
