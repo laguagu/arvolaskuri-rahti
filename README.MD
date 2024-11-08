@@ -634,6 +634,7 @@ Tämä korvaa Builder Image -konfiguraation ja alkaa käyttää repositoryssasi 
 - Dockerin virallista dokumentaatiota jne.
 
 ## Webhook määrittely
+Webhook määrittely automaattisia buildejä varten
 
 1. **Hae webhook tiedot Rahdista:**
 * BuildConfig:ista löytyy automaattisesti generoidut webhook secretit
