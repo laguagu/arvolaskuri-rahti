@@ -506,7 +506,7 @@ docker push käyttäjätunnus/sovelluksesi-nimi:latest
      - TAI **Rahti registry**: Valitse sisäisestä rekisteristä
    
    **Huom DockerHub yksityiset kuvat:**
-   - Jos käytät yksityistä DockerHub-kuvaa, sinun täytyy luoda "Image pull secret"
+   -  yksityistä DockerHub-kuvaa, sinun täytyy luoda "Image pull secret"
    - Määritä secret name, registry (docker.io), käyttäjätunnus ja salasana
    - Julkisille kuville tätä ei tarvita
 
@@ -675,8 +675,7 @@ Rahti rakentaa kuvan määritellyn tagin perusteella. Voit määritellä tagin i
 docker tag sovelluksesi-nimi image-registry.apps.2.rahti.csc.fi/projektisi-nimi/sovelluksesi-nimi:v1.0.0
 docker push image-registry.apps.2.rahti.csc.fi/projektisi-nimi/sovelluksesi-nimi:v1.0.0
 ```
-- Jos käytät `:latest` tagia, Rahti rakentaa aina uuden kuvan kun työnnät uuden version
-- Voit määritellä Rahdissa tagi tunnisteen itse minkä perusteella auto deploy käynnistyy
+- Voit määritellä Rahdissa tagi tunnisteen itse minkä perusteella auto deploy käynnistyy. Esim: `:latest`
 
 ### Hyödyllisiä komentoja
 
