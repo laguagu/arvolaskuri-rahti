@@ -530,6 +530,122 @@ Määrittele käyttöönoton yhteydessä:
 - **Auto deploy**: Kytke päälle "Auto deploy when new Image is available"
 - **Environment Variables**: Lisää tarvittavat ympäristömuuttujat Name/Value -pareina
 
+# Sovelluksen julkaisu CSC Rahti 2:ssa GitHub-integraatiolla
+
+Tämä ohje kattaa sovelluksen julkaisun Rahti 2:ssa käyttäen GitHub-integraatiota (BuildConfig) ja webhookkeja automaattiseen päivitykseen.
+
+## Tärkeä huomautus (8.11.2024)
+
+**Rahti 2:n nykyinen rajoitus:** Kun yrität luoda projektin suoraan GitHub-integraatiolla ja omalla Dockerfilella, saat virheilmoituksen "URL is valid but cannot be reached", vaikka SSH-yhteys olisi konfiguroitu oikein.
+
+### Builder Image vs. Oma Dockerfile
+
+Voit valita kahdesta lähestymistavasta:
+
+1. **Käytä Rahdin Builder Imagea (yksinkertaisempi):**
+   - Sopii perinteisille Node.js sovelluksille
+   - Riittävä useimmille yksinkertaisille web-sovelluksille
+   - Ei vaadi omaa Dockerfilea
+   - Nopeampi ottaa käyttöön
+
+2. **Käytä omaa Dockerfilea (joustavampi):**
+   - Tarvitaan jos sovelluksella on erityisvaatimuksia
+   - Vaaditaan esimerkiksi React Viten tai Next.js:n kanssa
+   - Antaa täyden kontrollin build-prosessiin
+   - Vaatii kaksivaiheisen setupin:
+     1. Luo ensin projekti käyttäen Rahdin valmista Builder Imagea
+     2. Muokkaa sen jälkeen BuildConfig käyttämään oman repositorysi Dockerfilea
+
+Valitse lähestymistapa sovelluksesi vaatimusten mukaan. Jos et ole varma, aloita Builder Imagella - voit aina siirtyä käyttämään omaa Dockerfilea myöhemmin.
+
+## Sisällysluettelo
+1. [SSH-avaimen luonti ja konfigurointi](#ssh-avaimen-luonti-ja-konfigurointi)
+2. [Rahdin konfigurointi](#rahdin-konfigurointi)
+3. [Dockerfile konfigurointi (valinnainen)](#dockerfile-konfigurointi)
+4. [Webhook määrittely](#webhook-määrittely)
+
+## SSH-avaimen luonti ja konfigurointi
+
+1. **Luo SSH-avainpari:**
+```bash
+ssh-keygen -t rsa -b 4096 -C "projektisi@example.com" -f ./rahti_github_key
+```
+* Paina Enter kun kysytään passphrasea (tyhjä on ok)
+
+2. **GitHub konfigurointi:**
+* Mene GitHub repositorion asetuksiin → Deploy keys
+* Klikkaa "Add deploy key"
+* Kopioi julkinen avain tiedostosta: `cat rahti_github_key.pub`
+* Anna avaimelle kuvaava nimi (esim. "Rahti Deploy Key")
+* Valitse "Allow write access"
+
+## Rahdin konfigurointi
+
+1. **Luo uusi projekti Rahdissa:**
+* Valitse +Add → Import from Git
+* Git Repo URL: Käytä SSH-muotoista URL:ää (esim. `git@github.com:username/repo.git`)
+  * SSH-muodon repositorysta saat avaamalla repon, klikkaamalla Code-painiketta ja valitsemalla SSH
+* Paina "Show advanced Git options"
+
+2. **Lisää SSH-avain Rahtiin:**
+* Source Secret → Create new Secret
+* Authentication type: SSH key
+* Kopioi yksityinen avain (`cat rahti_github_key`)
+* **Tärkeää:** Sisällytä myös BEGIN ja END rivit
+
+**HUOM!** Tässä vaiheessa Rahti näyttää virheen "URL is valid but cannot be reached" vaikka olet lisännyt SSH-avaimet oikein sekä Rahtiin että GitHubiin. Tämän rajoituksen takia emme voi käyttää Import Strategy → Dockerfile -vaihtoehtoa, vaan meidän on valittava valmis Builder Image (esim. Node.js). Voit jatkaa eteenpäin virheestä huolimatta ja valita Builder Image seuraavissa vaiheissa.
+
+3. **Builder Image määrittely:**
+* Valitse sopiva Builder Image (esim. Node.js 18 (UBI 8))
+* Määritä sovelluksen portti Advanced options -kohdassa
+* Valitse "Create a route" julkista URL:ää varten
+* **Huom:** Jos sovelluksesi toimii tällä konfiguraatiolla, voit jatkaa käyttämään sitä eikä oman Dockerfilen määrittelyä tarvita
+
+## Dockerfile konfigurointi (valinnainen)
+
+Jos Builder Image ei riitä sovelluksesi tarpeisiin:
+
+1. **BuildConfig muokkaus Builder Imagesta omaan Dockerfileen:**
+* Siirry Builds → BuildConfig → YAML
+* Muuta strategy-osio käyttämään repositorysi Dockerfilea:
+```yaml
+strategy:
+  type: Docker
+  dockerStrategy:
+    dockerfilePath: Dockerfile
+```
+* Tämä korvaa Builder Image -konfiguraation ja alkaa käyttää repositoryssasi olevaa Dockerfilea
+
+## Webhook määrittely
+
+1. **Hae webhook tiedot Rahdista:**
+* BuildConfig:ista löytyy automaattisesti generoidut webhook secretit
+* Kopioi GitHub webhook secret (`<buildconfig-nimi>-github-webhook-secret`)
+
+2. **Lisää webhook GitHubiin:**
+* GitHub repository → Settings → Webhooks → Add webhook
+* Payload URL muoto:
+```
+https://api.2.rahti.csc.fi:6443/apis/build.openshift.io/v1/namespaces/<projekti>/buildconfigs/<buildconfig>/webhooks/<secret>/github
+```
+* Content type: `application/json`
+* Secret: Sama kuin URL:ssä oleva secret
+* SSL verification: Enable
+* Just the push event: ✓
+* Active: ✓
+
+## Testaus
+
+1. Tee muutos GitHub repositorioon
+2. Push main-branchiin
+3. Tarkista Rahdista että build käynnistyy automaattisesti
+
+## Huomioitavaa
+
+* Rahti 2:ssa voi esiintyä "URL is valid but cannot be reached" -virhe SSH-yhteyden kanssa
+* Ongelma voidaan kiertää käyttämällä ensin Builder Imagea ja sen jälkeen konfiguroimalla BuildConfig käyttämään Dockerfilea
+* Varmista että portit täsmäävät konfiguraatiossa
+
 ## Hyödyllisiä vinkkejä Rahti/Docker ympäristöön
 
 ### Tagien käyttö
