@@ -611,7 +611,9 @@ ssh-keygen -t rsa -b 4096 -C "projektisi@example.com" -f ./rahti_github_key
 * Valitse sopiva Builder Image (esim. Node.js 18 (UBI 8))
 * Määritä sovelluksen portti Advanced options -kohdassa
 * Valitse "Create a route" julkista URL:ää varten
-* **Huom:** Jos sovelluksesi toimii tällä konfiguraatiolla, voit jatkaa käyttämään sitä eikä oman Dockerfilen määrittelyä tarvita
+* Lopuksi paina "Create"
+
+**Huom:** Jos sovelluksesi toimii tällä konfiguraatiolla, voit jatkaa käyttämään sitä eikä oman Dockerfilen määrittelyä tarvita
 
 ## Dockerfile konfigurointi (valinnainen)
 
