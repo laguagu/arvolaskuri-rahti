@@ -626,7 +626,8 @@ strategy:
   dockerStrategy:
     dockerfilePath: Dockerfile
 ```
-* Tämä korvaa Builder Image -konfiguraation ja alkaa käyttää repositoryssasi olevaa Dockerfilea
+Tämä korvaa Builder Image -konfiguraation ja alkaa käyttää repositoryssasi olevaa Dockerfilea.
+
 **Huom!** Dockerfilen luominen on rajattu tämän ohjeen ulkopuolelle. Jos tarvitset apua Dockerfilen luomisessa sovelluksellesi, voit hyödyntää:
 - ChatGPT/Claude tekoälyavustajia
 - Dockerin virallista dokumentaatiota jne.
