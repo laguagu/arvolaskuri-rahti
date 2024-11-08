@@ -3,21 +3,13 @@
 # Sisällysluettelo
 
 1. [Projektin kuvaus](#projektin-kuvaus)
-
 2. [Toiminnallisuuden kuvaus](#toiminnallisuuden-kuvaus)
-
 3. [Hyödyllisiä vinkkejä jatkokehitykseen](#hyödyllisiä-vinkkejä-jatkokehitykseen)
-
 4. [LLM-mallien käyttö ja promptien optimointi](#llm-mallien-käyttö-ja-promptien-optimointi)
-
 5. [API-hinnoittelu](#api-hinnoittelu-yksinkertaisia-esimerkkejä-syyskuu-2024)
-
 6. [Hyödyllisiä työkaluja RAG-toteutukseen](#hyödyllisiä-työkaluja-rag-toteutukseen)
-
 7. [Sovelluksen julkaisu CSC Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-dockerin-avulla---pikaohje)
-
 8. [GitHub-integraatio Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-github-integraatiolla)
-
 9. [React (Vite) + Node.js sovelluksen julkaisu](#react-vite--nodejs-sovelluksen-julkaisu-rahtiin)
 
 ## Ominaisuudet
