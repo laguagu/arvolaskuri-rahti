@@ -538,7 +538,7 @@ Tämä ohje kattaa:
 
 ## Tärkeä huomautus (8.11.2024)
 
-**Rahti 2:n nykyinen rajoitus:** Kun yrität luoda projektin suoraan GitHub-integraatiolla ja omalla Dockerfilella, saat virheilmoituksen "URL is valid but cannot be reached", vaikka SSH-yhteys olisi konfiguroitu oikein.
+**Rahti 2:n nykyinen rajoitus/bugi:** Kun yrität luoda projektin suoraan GitHub-integraatiolla ja omalla Dockerfilella, saat virheilmoituksen "URL is valid but cannot be reached", vaikka SSH-yhteys olisi konfiguroitu oikein.
 
 ### Builder Image vs. Oma Dockerfile
 
