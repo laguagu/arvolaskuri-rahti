@@ -1,18 +1,17 @@
-# Vanhan kalustearvio projektin esimerkki Node.js koodina
-
 # Sisällysluettelo
 
-1. [Projektin kuvaus](#projektin-kuvaus)
-2. [Toiminnallisuuden kuvaus](#toiminnallisuuden-kuvaus)
-3. [Hyödyllisiä vinkkejä jatkokehitykseen](#hyödyllisiä-vinkkejä-jatkokehitykseen)
-4. [LLM-mallien käyttö ja promptien optimointi](#llm-mallien-käyttö-ja-promptien-optimointi)
-5. [API-hinnoittelu](#api-hinnoittelu-yksinkertaisia-esimerkkejä-syyskuu-2024)
-6. [Hyödyllisiä työkaluja RAG-toteutukseen](#hyödyllisiä-työkaluja-rag-toteutukseen)
-7. [Sovelluksen julkaisu CSC Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-dockerin-avulla---yksinkertainen-ohje)
-8. [GitHub-integraatio Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-github-integraatiolla)
-9. [React (Vite) + Node.js sovelluksen tuotanto versiot](#react-vite--nodejs-sovelluksen-tuotanto-versiot)
+1. [Toiminnallisuuden kuvaus](#toiminnallisuuden-kuvaus)
+2. [Hyödyllisiä vinkkejä jatkokehitykseen](#hyödyllisiä-vinkkejä-jatkokehitykseen)
+3. [LLM-mallien käyttö ja promptien optimointi](#llm-mallien-käyttö-ja-promptien-optimointi)
+4. [API-hinnoittelu](#api-hinnoittelu-yksinkertaisia-esimerkkejä-syyskuu-2024)
+5. [Hyödyllisiä työkaluja RAG-toteutukseen](#hyödyllisiä-työkaluja-rag-toteutukseen)
+6. [Sovelluksen julkaisu CSC Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-dockerin-avulla---yksinkertainen-ohje)
+7. [GitHub-integraatio Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-github-integraatiolla)
+8. [React (Vite) + Node.js sovelluksen tuotanto versiot](#react-vite--nodejs-sovelluksen-tuotanto-versiot)
 
 ## Ominaisuudet
+
+Vanhan kalustearvio projektin esimerkki Node.js koodina
 
 1. Huonekalujen tunnistus ja analysointi kuvista
 2. Kuvan optimointi ennen analysointia
@@ -388,7 +387,7 @@ Kuukausikustannus (30 päivää): €2.40
 
 Nämä esimerkit osoittavat, että GPT-4o-mallin käyttö on suhteellisen edullista. Yksittäiset kyselyt maksavat vain murto-osia sentistä, mikä mahdollistaa laajan käytön ilman merkittäviä kustannuksia.
 
-## Random tietoa | Hyödyllisiä työkaluja RAG-toteutukseen
+## Hyödyllisiä työkaluja RAG-toteutukseen
 
 ### LangChain
 
