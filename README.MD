@@ -10,7 +10,7 @@
 6. [Hyödyllisiä työkaluja RAG-toteutukseen](#hyödyllisiä-työkaluja-rag-toteutukseen)
 7. [Sovelluksen julkaisu CSC Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-dockerin-avulla---pikaohje)
 8. [GitHub-integraatio Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-github-integraatiolla)
-9. [React (Vite) + Node.js sovelluksen julkaisu](#react-vite--nodejs-sovelluksen-julkaisu-rahtiin)
+9. [React (Vite) + Node.js sovelluksen tuotanto versiot](#react-vite--nodejs-sovelluksen-tuotanto-versiot)
 
 ## Ominaisuudet
 
@@ -712,9 +712,9 @@ oc get all
 2. Tarkista sovelluksen logit käyttöönoton jälkeen
 3. Pidä image mahdollisimman pienenä (käytä .dockerignore)
 
-# React (Vite) + Node.js sovelluksen julkaisu Rahtiin
+# React (Vite) + Node.js sovelluksen tuotanto versiot
 
-> **HUOM!** Tämä ohje sisältää teoreettisia ratkaisuvaihtoehtoja, joita ei ole vielä täysin testattu tuotantoympäristössä. Periaatteet ovat oikein, mutta yksityiskohdissa voi olla tarvetta hienosäätöön. Käytä tätä ohjetta pohjana ja muokkaa tarvittaessa omaan käyttöösi sopivaksi.
+> **HUOM!** Tämä ohje sisältää teoreettisia ratkaisuvaihtoehtoja, joita ei ole vielä täysin testattu Rahti 2 tuotantoympäristössä. Periaatteet ovat oikein, mutta yksityiskohdissa voi olla tarvetta hienosäätöön. Käytä tätä ohjetta pohjana ja muokkaa tarvittaessa omaan käyttöösi sopivaksi.
 
 Tämä ohje kattaa kolme eri tapaa julkaista React (Vite) + Node.js sovellus Rahdissa.
 
