@@ -530,6 +530,9 @@ metadata:
   name: sovelluksesi-nimi
   namespace: projektisi-nimi
 ```
+
+Huom! Voit myös puskea kuvan suoraan Rahti 2:n registryyn ilman että luot ImageStreamia etukäteen! Rahti luo sen siinä tapauksessa automaattisesti
+
 3. Käytä luotua ImageStreamia sovelluksen käyttöönotossa
 
 ## 5. Deployment-asetukset
