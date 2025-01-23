@@ -1,6 +1,4 @@
 import { analyzeFurnitureWithZod } from "./ZodExample.js";
-// import { analyzeImage } from "./imageAnalysis.js";
-// import { estimateFurniturePrice } from "./priceAnalysis.js";
 /*
 Yksi vaihtoehto on käyttää Vercel AI SDK:ta https://sdk.vercel.ai/examples/node/generating-structured-data/generate-object
 IMO helpoin tapa käyttää strukturoitua outputtia.

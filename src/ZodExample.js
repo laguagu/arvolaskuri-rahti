@@ -6,18 +6,6 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import sharp from "sharp";
 import { z } from "zod";
 
-/*
-examplePrompt2:
-Tämä vain esimerkki joka on generoitu suoraan Clauden avulla. Hyvä esimerkki siitä miten promptia voi muokata ja llm mallia ohjeistaa
-Nyt malli palauttaa "Unknown" jos ei tiedä jotain tietoa. Tämän tiedon voi viedä suoraan frontend lomakkeelle vaikka ja jos tieto on "Unknown" niin se voidaan jättää tyhjäksi
-
-FurnitureAnalysis Skeema:
-Joskus pystyi antamaan .optional() määrityksen Schemalle jos ei ole pakollinen tieto, jolloin saattoi jättää pois tämän tiedon mikäli se ei ole tiedossa. Kannattaa lukea documentaatiosta onko se mahdollista
-.description() metodilla voi antaa ohjeita AI:lle mitä tietoa kenttä sisältää ja miten sitä tulisi käyttää
-Zod on myös hyvä datan validointii .safeParse() / .parse() metodeilla https://zod.dev/?id=basic-usage
-*/
-
-
 const examplePrompt2 = dedent` 
 Analyze the furniture in the image and provide the following information:
 1. Type: Identify the category of furniture (e.g., chair, table, sofa).
