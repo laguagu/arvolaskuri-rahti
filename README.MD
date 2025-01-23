@@ -229,7 +229,7 @@ Anna nyt vastauksesi tästä huonekalusta:
 
 - **Mallin valinta**: Geminin ja OpenAI:n eri malleilla on erilaisia vahvuuksia. Kokeile eri malleja löytääksesi parhaiten tehtävään sopivan.
 - **Lämpötila (Temperature)**: Matalampi lämpötila (lähellä 0) tuottaa johdonmukaisempia vastauksia, korkeampi (lähellä 1) luovempia.
-- **Maksimitokenit**: Säädä tätä tarpeen mukaan, mutta muista, että pidempi vastaus ei aina ole parempi.
+- **Maksimitokenit**: Katkaisee vastauksen kun kynnysarvo saavutetaan.
 
 Esimerkki mallin konfiguroinnista Geminillä:
 
