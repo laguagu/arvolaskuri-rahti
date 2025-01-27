@@ -326,32 +326,13 @@ Arvioitu kustannus:
 - Tuloste: ~50 tokenia ≈ $0.0005 (€0.00046)
 - Yhteensä: $0.000575 (€0.00053) (noin 0,05 senttiä)
 
-### Kuvapohjainen kysely
+### Tokenien lasku OpenAI
 
-Esimerkki: Huonekalun tunnistus ja hinta-arvio kuvan perusteella
+**OpenAI:n tokenien lasku ohjelma - Tokenizer**
+https://platform.openai.com/tokenizer
 
-```
-[Kuva ruskeasta nahkasohvasta]
-Kysely: "Mikä huonekalu tämä on ja paljonko se voisi maksaa?"
-Vastaus: "Kuva esittää ruskeaa nahkasohvaa. Se näyttää olevan hyvässä kunnossa..."
-```
-
-Arvioitu kustannus:
-
-- Kuva (oletetaan 1024x768px): $0.000638 (€0.00059)
-- Tekstisyöte: ~10 tokenia ≈ $0.000025 (€0.000023)
-- Tuloste: ~50 tokenia ≈ $0.0005 (€0.00046)
-- Yhteensä: $0.001163 (€0.00107) (noin 0,1 senttiä)
-
-### Kokonaiskustannusarvio tyypilliselle käyttötapaukselle
-
-Oletetaan, että sovelluksesi analysoi 100 huonekalua päivässä, joista puolet tekstipohjaisesti ja puolet kuvapohjaisesti:
-
-- 50 tekstipohjaista kyselyä: 50 \* €0.00053 = €0.0265
-- 50 kuvapohjaista kyselyä: 50 \* €0.00107 = €0.0535
-- Päivittäinen kokonaiskustannus: €0.08 (noin 8 senttiä)
-
-Kuukausikustannus (30 päivää): €2.40
+**API Pricing**
+https://openai.com/api/pricing/
 
 ### Huomioitavaa
 
