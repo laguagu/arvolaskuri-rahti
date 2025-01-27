@@ -173,8 +173,6 @@ Tässä esimerkissä:
 3. Lähetämme sekä tekstimuotoisen ohjeen että kuvan analysoitavaksi.
 4. Saamme takaisin strukturoidun objektin, joka sisältää tietoja huonekalusta.
 
-Huomaa, että tarvitset OpenAI API avaimen tätä esimerkkiä varten, ja sinun tulee asentaa tarvittavat riippuvuudet (`@vercel/ai`, `openai`, `zod`).
-
 Lisätietoja: [Vercel AI SDK Documentation](https://sdk.vercel.ai/docs)
 
 ### Kuvien esikäsittely
@@ -190,8 +188,6 @@ const processedImage = await sharp("input.jpg").resize(800, 600).toBuffer();
 ```
 
 Lisätietoja: [Sharp Documentation](https://sharp.pixelplumbing.com/)
-
-Nämä työkalut ja tekniikat voivat merkittävästi parantaa sovelluksen toiminnallisuutta ja tehokkuutta jatkokehityksessä.
 
 ## LLM-mallien käyttö ja promptien optimointi
 
