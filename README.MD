@@ -334,17 +334,6 @@ https://platform.openai.com/tokenizer
 **API Pricing**
 https://openai.com/api/pricing/
 
-### Huomioitavaa
-
-1. Nämä hinnat perustuvat GPT-4o-2024-08-06 -malliin, joka on edullisempi kuin aiemmat versiot.
-2. Todelliset kustannukset voivat vaihdella riippuen tarkan kyselyn ja vastauksen pituudesta sekä kuvan koosta.
-3. Suuremmilla volyymeilla voi olla mahdollista käyttää Batch API -hinnoittelua, joka puolittaisi kustannukset.
-4. Hinnat voivat muuttua ajan myötä, joten tarkista aina viimeisimmät hinnat OpenAI:n sivustolta.
-
-Nämä esimerkit osoittavat, että GPT-4o-mallin käyttö on suhteellisen edullista. Yksittäiset kyselyt maksavat vain murto-osia sentistä, mikä mahdollistaa laajan käytön ilman merkittäviä kustannuksia.
-
-Lisätietoa: (https://platform.openai.com/tokenizer)
-
 # Sovelluksen julkaisu CSC Rahti 2:ssa Dockerin avulla - Yksinkertainen ohje
 
 ## Tärkeä huomio ennen aloitusta!
