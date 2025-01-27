@@ -303,10 +303,6 @@ const answer = await ragQuery(query, vectorStore);
 console.log(answer);
 ```
 
-Tämä lähestymistapa mahdollistaa LLM:n vastausten rikastamisen omalla datasetillasi, mikä on erityisen hyödyllistä huonekalujen hinnoittelussa ja arvioinnissa, missä markkinatilanne ja hinnat voivat vaihdella alueittain ja ajan myötä.
-
-Nämä vinkit auttavat sinua hyödyntämään LLM-malleja tehokkaammin projektissasi ja tuottamaan tarkempia ja luotettavampia tuloksia huonekalujen arvioinnissa.
-
 ## API-hinnoittelu: Yksinkertaisia esimerkkejä (Syyskuu 2024)
 
 Nämä esimerkit perustuvat GPT-4o-2024-08-06 -mallin hinnoitteluun syyskuussa 2024. Käytämme normaalia hinnoittelua, ei Batch API -hintoja.
