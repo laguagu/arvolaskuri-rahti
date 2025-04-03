@@ -660,7 +660,9 @@ oc get all
 
 ### Yleisiä käytäntöjä
 
-1. Testaa ympäristömuuttujat ennen tuotantoon vientiä
+1. **Käytä sisäisiä palvelunimiä kun mahdollista**
+   - Pidä backend sisäisenä palveluna ilman julkista reittiä
+   - Käytä Kubernetes-palvelunimiä (esim. `http://backend-service-name:8080`)
 2. Tarkista sovelluksen logit käyttöönoton jälkeen
 3. Pidä image mahdollisimman pienenä (käytä .dockerignore)
 
@@ -810,6 +812,8 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 ```
+
+> **Paras käytäntö:** Tietoturvan kannalta paras käytäntö Rahdissa on pitää backend-palvelu täysin sisäisenä ilman julkista reittiä. Tällöin frontend kutsuu backendiä sisäisen service-nimen kautta (esim. `http://backend-service-name:8080`). Kun määrittelet backendin palveluksi ilman reittejä (routes), se on saavutettavissa vain Rahti-projektin sisällä. Frontend-sovelluksessa voit määrittää ympäristömuuttujan `API_URL=http://backend-service-name:8000` osoittamaan sisäiseen palveluun.
 
 ### 2. Frontend setup (Vite)
 
