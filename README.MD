@@ -1026,6 +1026,14 @@ Korvaa:
 
 ### Vaihe 2: Luo uusi reitti
 
+1. Varmista ensin, että olet oikeassa projektissa:
+
+```bash
+oc project
+```
+
+2. Luo sitten uusi reitti:
+
 ```bash
 oc create -f uusi-reitti.yaml
 ```
