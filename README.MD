@@ -6,6 +6,7 @@
 4. [Sovelluksen julkaisu CSC Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-dockerin-avulla---yksinkertainen-ohje)
 5. [GitHub-integraatio Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-github-integraatiolla)
 6. [React (Vite) + Node.js sovelluksen tuotanto versiot](#react-vite--nodejs-sovelluksen-tuotanto-versiot)
+7. [Rahti-sovelluksen URL-osoitteen (Route) muuttaminen](#rahti-sovelluksen-url-osoitteen-route-muuttaminen)
 
 ## Vanhan kalustearvio projektin esimerkki Node.js koodina
 
@@ -974,3 +975,105 @@ Tämä mahdollistaa:
 1. Frontendin buildauksen
 2. Buildin automaattisen kopioinnin backend/client -kansioon
 3. Koko prosessin ajamisen yhdellä komennolla: `npm run build`
+
+# Rahti-sovelluksen URL-osoitteen (Route) muuttaminen
+
+Rahtissa voit lisätä uuden URL-osoitteen tai muuttaa olemassa olevan sovelluksen URL-osoitetta luomalla uuden Route-objektin. Useita reittejä voi osoittaa samaan palveluun eri hostname-osoitteilla.
+
+## YAML-tiedosto menetelmä (Suositeltu)
+
+### Vaihe 1: Luo YAML-tiedosto uutta reittiä varten
+
+Luo tiedosto nimeltä `uusi-reitti.yaml` seuraavalla sisällöllä:
+
+```yaml
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: <reitin-nimi>
+  namespace: <nimiavaruus>
+  labels:
+    app: <sovelluksen-nimi>
+    app.kubernetes.io/component: <sovelluksen-nimi>
+    app.kubernetes.io/instance: <sovelluksen-nimi>
+    app.kubernetes.io/name: <sovelluksen-nimi>
+    app.kubernetes.io/part-of: <projektin-nimi>
+  annotations:
+    openshift.io/host.generated: "false"
+spec:
+  host: <kustomoitu-nimi>.2.rahtiapp.fi
+  to:
+    kind: Service
+    name: <palvelun-nimi>
+    weight: 100
+  port:
+    targetPort: <portti>-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+```
+
+Korvaa:
+
+- `<reitin-nimi>`: Reittiobjektin nimi
+- `<nimiavaruus>`: Projektisi nimiavaruus
+- `<sovelluksen-nimi>`: Sovelluksesi nimi
+- `<projektin-nimi>`: Projektisi nimi
+- `<kustomoitu-nimi>`: Haluamasi URL-etuliite
+- `<palvelun-nimi>`: Palvelun nimi johon reitti yhdistetään
+- `<portti>`: Porttinumero jota palvelusi käyttää (esim. 3000, 8080)
+
+### Vaihe 2: Luo uusi reitti
+
+```bash
+oc create -f uusi-reitti.yaml
+```
+
+### Vaihe 3: Testaa uutta reittiä
+
+Käy uudessa URL-osoitteessasi varmistaaksesi että se toimii oikein
+
+### Vaihe 4: Halutessasi poista vanha reitti
+
+Jos et enää tarvitse vanhaa reittiä, voit poistaa sen:
+
+```bash
+oc delete route <vanhan-reitin-nimi> -n <nimiavaruus>
+```
+
+**Huom:** Voit pitää useita reittejä aktiivisena samanaikaisesti. Jokaisella reitillä voi olla eri hostname-osoite, vaikka ne osoittavat samaan palveluun. Tämä mahdollistaa sekä vanhojen että uusien URL-osoitteiden pitämisen aktiivisena siirtymävaiheiden aikana.
+
+## Esimerkki
+
+Sovellukselle "upbeat" jonka palvelun nimi on "upbeat" ja joka toimii portissa 3000:
+
+```yaml
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: learning-assistant
+  namespace: upbeat-apps
+  labels:
+    app: upbeat
+    app.kubernetes.io/component: upbeat
+    app.kubernetes.io/instance: upbeat
+    app.kubernetes.io/name: upbeat
+    app.kubernetes.io/part-of: learning-assistant
+  annotations:
+    openshift.io/host.generated: "false"
+spec:
+  host: learning-assistant.2.rahtiapp.fi
+  to:
+    kind: Service
+    name: upbeat
+    weight: 100
+  port:
+    targetPort: 3000-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+```
+
+**Huom:** Rahtin hostname-osoitteiden on päätyttävä `.2.rahtiapp.fi`-päätteeseen ja etuliitteen on oltava uniikki koko Rahti-ympäristössä.
