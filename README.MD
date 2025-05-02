@@ -7,6 +7,7 @@
 5. [GitHub-integraatio Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-github-integraatiolla)
 6. [React (Vite) + Node.js sovelluksen tuotanto versiot](#react-vite--nodejs-sovelluksen-tuotanto-versiot)
 7. [Rahti-sovelluksen URL-osoitteen (Route) muuttaminen](#rahti-sovelluksen-url-osoitteen-route-muuttaminen)
+8. [PostgreSQL+pgVector tietokannan asennus ja käyttö Rahdissa](#postgresql-pgvector-tietokannan-asennus-ja-käyttö-rahdissa)
 
 ## Vanhan kalustearvio projektin esimerkki Node.js koodina
 
@@ -1085,3 +1086,131 @@ spec:
 ```
 
 **Huom:** Rahtin hostname-osoitteiden on päätyttävä `.2.rahtiapp.fi`-päätteeseen ja etuliitteen on oltava uniikki koko Rahti-ympäristössä.
+
+## PostgreSQL+pgVector tietokannan asennus ja käyttö Rahdissa
+
+### Tietokantakontin asennus CSC Rahti 2 -ympäristöön
+
+PostgreSQL-tietokanta pgVector-laajennuksella voidaan asentaa Rahti-ympäristöön käyttäen Red Hat -yhteensopivaa konttikuvaa, joka on suunniteltu toimimaan OpenShift-ympäristössä.
+
+1. Kirjaudu Rahti 2 -käyttöliittymään
+2. Valitse projekti tai luo uusi
+3. Valitse "Deploy Image" -toiminto
+4. Valitse "Image name from external registry" ja syötä:
+   ```
+   quay.io/rh-aiservices-bu/postgresql-15-pgvector-c9s
+   ```
+5. Anna deploymentille nimi (esim. "postgresql-pgvector")
+6. Määritä tarvittavat ympäristömuuttujat:
+   - POSTGRESQL_USER=postgres
+   - POSTGRESQL_PASSWORD=vahva_salasana
+   - POSTGRESQL_DATABASE=vectordb
+7. **ÄLÄ** luo Route-määritystä tietokannalle turvallisuussyistä
+
+### Pysyvän tallennustilan lisääminen
+
+Tietokanta tarvitsee pysyvän tallennustilan, jotta data säilyy podin uudelleenkäynnistysten välillä:
+
+1. Avaa luomasi Deployment
+2. Valitse "Actions" → "Add Storage"
+3. Luo uusi PersistentVolumeClaim (PVC):
+   - Nimi: "pgvector-data"
+   - Access mode: Single user (RWO)
+   - Koko: 5 GiB tai tarpeiden mukaan enemmän
+   - Mount path: `/var/lib/pgsql/data`
+4. Tallenna muutokset
+
+## PgVector-laajennuksen käyttöönotto
+
+Voit aktivoida pgVector-laajennuksen helposti pgAdmin-käyttöliittymän kautta:
+
+1. **Yhdistä tietokantaan pgAdminilla** käyttäen port-forward-yhteyttä tai suoraa yhteyttä klusterin sisällä
+
+2. **Laajenna palvelinyhteys** ja klikkaa oikealla hiiren painikkeella "Databases" valitaksesi "Create" → "Database..."
+3. **Luo uusi tietokanta** (jos sitä ei ole vielä olemassa):
+
+   - Anna nimeksi "vectordb"
+   - Klikkaa "Save"
+
+4. **Laajenna vectordb-tietokanta** ja klikkaa oikealla hiiren painikkeella "Extensions" → "Create" → "Extension..."
+
+5. **Valitse pgVector-laajennus**:
+
+   - Valitse pudotusvalikosta "vector"
+   - Klikkaa "Save"
+
+6. **Tarkista että laajennus on aktivoitu**:
+   - Laajenna "Extensions"-kansio vectordb-tietokannan alla
+   - Lista näyttää nyt "vector"-laajennuksen
+
+Vaihtoehtoisesti voit myös suorittaa SQL-komennon pgAdminin kyselyikkunassa:
+
+1. Avaa Query Tool (Työkalupalkista tai Ctrl+Shift+Q)
+2. Kirjoita:
+
+   ```sql
+   CREATE EXTENSION vector;
+   ```
+
+3. Suorita kysely (F5 tai Execute-painike)
+
+## PgVector-laajennuksen käyttö
+
+Kun laajennus on aktivoitu, voit käyttää vektoriominaisuuksia:
+
+```sql
+-- Luo taulu vektoriominaisuudella (3-ulotteinen vektori)
+CREATE TABLE items (id bigserial PRIMARY KEY, embedding vector(3));
+
+-- Lisää tauluun dataa
+INSERT INTO items (embedding) VALUES ('[1,2,3]'), ('[4,5,6]');
+
+-- Suorita vektorihaku (etsii lähimmät vektorit annetulle vektorille)
+SELECT * FROM items ORDER BY embedding <-> '[3,1,2]' LIMIT 5;
+```
+
+### Tietokannan hallinta pgAdmin-sovelluksella
+
+PostgreSQL-tietokantaa voi hallita pgAdmin-sovelluksella käyttäen port-forward-yhteyttä:
+
+1. Asenna pgAdmin paikallisesti (https://www.pgadmin.org/download/)
+
+2. Luo port-forward-yhteys PostgreSQL-palveluun OpenShift CLI:n avulla:
+
+   ```bash
+   # Yhdistä ensin Rahtiin
+   oc login
+
+   # Valitse projekti
+   oc project [projektin-nimi]
+
+   # Luo port-forward-yhteys
+   oc port-forward svc/postgresql-pgvector 5432:5432
+   ```
+
+   Jätä komentorivi-ikkuna auki, jotta yhteys säilyy.
+
+3. Käynnistä paikallinen pgAdmin-sovellus ja luo uusi palvelinyhteys:
+
+   - Nimi: Rahti PostgreSQL
+   - Host: localhost (127.0.0.1)
+   - Port: 5432
+   - Maintenance database: vectordb
+   - Username: postgres
+   - Password: (määrittämäsi POSTGRESQL_PASSWORD)
+
+4. Yhdistä ja aloita tietokannan hallinta.
+
+### Tietokannan yhdistäminen sovellukseen Rahdissa
+
+Kun sekä sovellus että PostgreSQL-tietokanta toimivat samassa Rahti-projektissa, sovellus voi yhdistää tietokantaan käyttäen palvelunimeä isäntänimenä:
+
+```
+DATABASE_URL=postgresql://postgres:salasana@postgresql-pgvector:5432/vectordb
+```
+
+Tämä yhteysosoite voidaan määrittää sovelluksen ympäristömuuttujissa.
+
+### Huomioitavaa
+
+- Port-forward-yhteys on tilapäinen ja katkaisee yhteyden, jos komentorivi suljetaan. Se on tarkoitettu lähinnä hallintakäyttöön.
