@@ -575,7 +575,7 @@ Webhook määrittely automaattisia buildejä varten
 1. **Hae webhook tiedot Rahdista:**
 
 - BuildConfig:ista löytyy automaattisesti generoidut webhook secretit
-- Kopioi GitHub webhook secret (`<buildconfig-nimi>-github-webhook-secret`)
+- Kopioi GitHub webhook secret (`<buildconfig-nimi>-generic-webhook-secret`)
 
 2. **Lisää webhook GitHubiin:**
 
@@ -583,7 +583,7 @@ Webhook määrittely automaattisia buildejä varten
 - Payload URL muoto:
 
 ```
-https://api.2.rahti.csc.fi:6443/apis/build.openshift.io/v1/namespaces/<projekti>/buildconfigs/<buildconfig>/webhooks/<secret>/github
+https://api.2.rahti.csc.fi:6443/apis/build.openshift.io/v1/namespaces/<projekti>/buildconfigs/<buildconfig>/webhooks/<secret>/generic
 ```
 
 > Voit kopioda URL osoitteen Rahdin käyttöliittymästä Webhooks -> "Copy URL with Secret"
