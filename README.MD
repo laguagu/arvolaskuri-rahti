@@ -2,40 +2,12 @@
 
 ## Sisällysluettelo
 
-1. [API-hinnoittelu](#api-hinnoittelu-yksinkertaisia-esimerkkejä-syyskuu-2024)
-2. [Sovelluksen julkaisu CSC Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-dockerin-avulla---yksinkertainen-ohje)
-3. [GitHub-integraatio Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-github-integraatiolla)
-4. [React (Vite) + Node.js sovelluksen tuotanto versiot](#react-vite--nodejs-sovelluksen-tuotanto-versiot)
-5. [Rahti-sovelluksen URL-osoitteen (Route) muuttaminen](#rahti-sovelluksen-url-osoitteen-route-muuttaminen)
-6. [PostgreSQL+pgVector tietokannan asennus ja käyttö Rahdissa](#postgresql-pgvector-tietokannan-asennus-ja-käyttö-rahdissa)
-7. [CSC Allas S3 Credentials Hakuohjeet](#csc-allas-s3-credentials-hakuohjeet)
-
-## API-hinnoittelu: Yksinkertaisia esimerkkejä (Syyskuu 2024)
-
-Nämä esimerkit perustuvat GPT-4o-2024-08-06 -mallin hinnoitteluun syyskuussa 2024. Käytämme normaalia hinnoittelua, ei Batch API -hintoja.
-
-### Tekstipohjainen kysely
-
-Esimerkki: Huonekalun hinta-arvio tekstikuvauksen perusteella
-
-```
-Kysely: "Anna hinta-arvio ruskealle nahkasohvalle, joka on 3 vuotta vanha ja hyvässä kunnossa."
-Vastaus: "Perustuen annettuihin tietoihin, arvioisin ruskean nahkasohvan hinnaksi noin 600-800 euroa käytettynä..."
-```
-
-Arvioitu kustannus:
-
-- Syöte: ~30 tokenia ≈ $0.000075 (€0.000069)
-- Tuloste: ~50 tokenia ≈ $0.0005 (€0.00046)
-- Yhteensä: $0.000575 (€0.00053) (noin 0,05 senttiä)
-
-### Tokenien lasku OpenAI
-
-**OpenAI:n tokenien lasku ohjelma - Tokenizer**
-https://platform.openai.com/tokenizer
-
-**API Pricing**
-https://openai.com/api/pricing/
+1. [Sovelluksen julkaisu CSC Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-dockerin-avulla---yksinkertainen-ohje)
+2. [GitHub-integraatio Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-github-integraatiolla)
+3. [React (Vite) + Node.js sovelluksen tuotanto versiot](#react-vite--nodejs-sovelluksen-tuotanto-versiot)
+4. [Rahti-sovelluksen URL-osoitteen (Route) muuttaminen](#rahti-sovelluksen-url-osoitteen-route-muuttaminen)
+5. [PostgreSQL+pgVector tietokannan asennus ja käyttö Rahdissa](#postgresqlpgvector-tietokannan-asennus-ja-käyttö-rahdissa)
+6. [CSC Allas S3 Credentials Hakuohjeet](#csc-allas-s3-credentials-hakuohjeet)
 
 # Sovelluksen julkaisu CSC Rahti 2:ssa Dockerin avulla - Yksinkertainen ohje
 
