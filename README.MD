@@ -982,17 +982,21 @@ OpenStack client ei välttämättä ole PATH:ssa asennuksen jälkeen. Lisää Py
 $env:PATH = "C:\Users\[käyttäjänimi]\AppData\Local\Programs\Python\Python313\Scripts;" + $env:PATH
 ```
 
-**Huom:** Vaihda `[käyttäjänimi]` ja Python versio (`Python313`) oikeiksi.
+**HUOM:** Polut vaihtelevat Python-asennuksen mukaan! Tarkista omat polkusi ensin komennolla:
+
+```powershell
+python -c "import sys; import os; print(os.path.dirname(sys.executable) + '\\Scripts')"
+```
+
+Käytä tulostunutta polkua yllä olevan komennon sijaan.
 
 **Suosittelen asettamaan PATH:n pysyvästi:**
 
 - Windows-näppäin + R → `sysdm.cpl`
 - Advanced → Environment Variables
 - System variables → PATH → Edit → New
-- Lisää: `C:\Users\[käyttäjänimi]\AppData\Local\Programs\Python\Python313\Scripts`
+- Lisää: Yllä selvittämäsi Scripts-kansion polku
 - OK, OK, OK → Avaa uusi PowerShell
-
-**Vinkki:** Jos kohtaat ongelmia PATH-asetuksissa, voit kysyä apua esim. ChatGPT:ltä tai tarkistaa Python-asennuksen sijaintisi komennolla `python -c "import sys; print(sys.executable)"`.
 
 ### Testaa asennus
 
