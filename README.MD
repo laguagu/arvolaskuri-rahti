@@ -984,6 +984,14 @@ $env:PATH = "C:\Users\[käyttäjänimi]\AppData\Local\Programs\Python\Python313\
 
 **Huom:** Vaihda `[käyttäjänimi]` ja Python versio (`Python313`) oikeiksi.
 
+**Suosittelen asettamaan PATH:n pysyvästi:**
+
+- Windows-näppäin + R → `sysdm.cpl`
+- Advanced → Environment Variables
+- System variables → PATH → Edit → New
+- Lisää: `C:\Users\[käyttäjänimi]\AppData\Local\Programs\Python\Python313\Scripts`
+- OK, OK, OK → Avaa uusi PowerShell
+
 **Vinkki:** Jos kohtaat ongelmia PATH-asetuksissa, voit kysyä apua esim. ChatGPT:ltä tai tarkistaa Python-asennuksen sijaintisi komennolla `python -c "import sys; print(sys.executable)"`.
 
 ### Testaa asennus
