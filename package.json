@@ -1,18 +1,12 @@
 {
-  "name": "arvolaskuri-node-backend",
-  "version": "1.0.0",
-  "type": "module",
-  "main": "src/index.js",
+  "name": "arvolaskuri-rahti",
+  "description": "Rahti ohjeita",
   "scripts": {
-    "start": "node src/index.js"
+    "format": "prettier --write '**/*.{js,ts,json,md}'"
   },
+  "author": "laguagu",
+  "license": "MIT",
   "dependencies": {
-    "@google/generative-ai": "^0.19.0",
-    "dedent": "^1.5.3",
-    "dotenv": "^16.4.5",
-    "openai": "^4.65.0",
-    "sharp": "^0.33.5",
-    "uuid": "^10.0.0",
-    "zod": "^3.23.8"
+    "prettier": "^3.5.3"
   }
 }

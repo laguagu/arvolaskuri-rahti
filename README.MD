@@ -1,305 +1,14 @@
-# Sisällysluettelo
-
-1. [Toiminnallisuuden kuvaus](#toiminnallisuuden-kuvaus)
-2. [LLM-mallien käyttö ja promptien optimointi](#llm-mallien-käyttö-ja-promptien-optimointi)
-3. [API-hinnoittelu](#api-hinnoittelu-yksinkertaisia-esimerkkejä-syyskuu-2024)
-4. [Sovelluksen julkaisu CSC Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-dockerin-avulla---yksinkertainen-ohje)
-5. [GitHub-integraatio Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-github-integraatiolla)
-6. [React (Vite) + Node.js sovelluksen tuotanto versiot](#react-vite--nodejs-sovelluksen-tuotanto-versiot)
-7. [Rahti-sovelluksen URL-osoitteen (Route) muuttaminen](#rahti-sovelluksen-url-osoitteen-route-muuttaminen)
-8. [PostgreSQL+pgVector tietokannan asennus ja käyttö Rahdissa](#postgresql-pgvector-tietokannan-asennus-ja-käyttö-rahdissa)
-
-## Vanhan kalustearvio projektin esimerkki Node.js koodina
-
-1. Huonekalujen tunnistus ja analysointi kuvista
-2. Kuvan optimointi ennen analysointia
-3. Strukturoidun datan tuottaminen Zod-skeeman avulla
-4. OpenAI:n GPT-4 Vision -mallin hyödyntäminen kuva-analyysissa
-
-## Tiedostorakenne
-
-- `ZodExample.js`: Sisältää logiikan kuvien analysointiin ja datan strukturointiin
-- `index.js`: Pääsovellustiedosto, joka demonstroi hinta-arvioinnin toimintaa
-
-## Asennus
-
-1. Kloonaa tämä repositorio
-2. Asenna riippuvuudet komennolla `npm install`
-3. Kopioi `.env.example` tiedosto nimellä `.env`:
-   ```
-   cp .env.example .env
-   ```
-4. Avaa `.env` tiedosto ja lisää sinne oma GEMINI_API_KEY
-
-## Käyttö
-
-Aja sovellus komennolla:
-
-```
-npm start
-```
-
-Tämä suorittaa `index.js`-tiedoston, joka demonstroi hinta-arvioinnin toimintaa kovakoodatulla esimerkillä.
-
-## Toiminnallisuuden kuvaus
-
-1. `index.js`:
-
-   - Demonstroi hinta-arvioinnin toimintaa kovakoodatulla esimerkillä
-   - Tulostaa huonekalun tiedot ja saadun hinta-arvion konsoliin
-
-2. `ZodExample.js`:
-
-- `analyzeFurnitureWithZod`-funktio ottaa vastaan kuvatiedoston polun
-- Kuva optimoidaan Sharp-kirjaston avulla
-- Optimoitu kuva lähetetään OpenAI:n GPT-4 Vision -mallille analysoitavaksi
-- Analyysin tulos validoidaan ja muotoillaan Zod-skeeman avulla
-- Funktio palauttaa strukturoidun objektin, joka sisältää tiedot analysoidusta huonekalusta
-
-Zod-skeema (`FurnitureAnalysis`) määrittelee seuraavat kentät:
-
-- type: Huonekalun tyyppi
-- brand: Valmistaja tai suunnittelija
-- model: Mallinimi tai -numero
-- color: Pääväri
-- dimensions: Mitat (pituus, leveys, korkeus)
-- age: Arvioitu ikä vuosissa
-- condition: Kunto
-- haagaHelia: Onko huonekalu Haaga-Heliasta (boolean) ( Tämä on lisätty vain esimerkin vuoksi )
-
-### Structured Output Gemini AI:lla
-
-Gemini AI tukee strukturoitua JSON-muotoista tulostetta. Tämä voi olla hyödyllinen tapa saada johdonmukaisia ja helposti käsiteltäviä vastauksia. Voit määritellä JSON-skeeman joko promptissa tai mallin konfiguraatiossa.
-
-Esimerkki skeeman määrittelystä mallin konfiguraatiossa:
-
-```javascript
-const schema = {
-  type: SchemaType.OBJECT,
-  properties: {
-    price: {
-      type: SchemaType.NUMBER,
-      description: "Estimated price of the furniture",
-    },
-    confidence: {
-      type: SchemaType.STRING,
-      description: "Confidence level of the estimation",
-    },
-  },
-  required: ["price", "confidence"],
-};
-
-const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-pro",
-  generationConfig: {
-    responseMimeType: "application/json",
-    responseSchema: schema,
-  },
-});
-```
-
-Lisätietoja: [Gemini API Structured Output Documentation](https://ai.google.dev/gemini-api/docs/structured-output?lang=node)
-
-### Vercel AI SDK
-
-Vercel AI SDK tarjoaa myös hyvän tavan tuottaa strukturoitua dataa. Se käyttää `zod`-kirjastoa skeemojen määrittelyyn ja validointiin.
-
-Esimerkki tekstin analysoinnista:
-
-```javascript
-import { generateObject } from "ai";
-import { openai } from "@ai-sdk/openai";
-import { z } from "zod";
-
-const result = await generateObject({
-  model: openai("gpt-4-turbo"),
-  schema: z.object({
-    price: z.number(),
-    confidence: z.string(),
-  }),
-  prompt: "Estimate the price of this furniture...",
-});
-```
-
-Esimerkki kuvan analysoinnista:
-
-```javascript
-import { generateObject } from "ai";
-import { openai } from "@ai-sdk/openai";
-import { z } from "zod";
-import fs from "fs";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-async function analyzeFurnitureImage() {
-  const { object } = await generateObject({
-    model: openai("gpt-4o-2024-08-06"),
-    maxTokens: 512,
-    schema: z.object({
-      furniture: z.object({
-        type: z.string(),
-        material: z.string(),
-        color: z.string(),
-        estimatedPrice: z.number(),
-        condition: z.string(),
-      }),
-    }),
-    messages: [
-      {
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: "Analyze this furniture image and provide details about it.",
-          },
-          {
-            type: "image",
-            image: fs.readFileSync("./path/to/your/furniture/image.jpg"),
-          },
-        ],
-      },
-    ],
-  });
-
-  console.log(JSON.stringify(object, null, 2));
-}
-
-analyzeFurnitureImage();
-```
-
-Tässä esimerkissä:
-
-1. Käytämme `gpt-4o-2024-08-06` mallia, joka pystyy analysoimaan kuvia.
-2. Määrittelemme skeeman `zod`:in avulla, joka kuvaa odotettua vastausta.
-3. Lähetämme sekä tekstimuotoisen ohjeen että kuvan analysoitavaksi.
-4. Saamme takaisin strukturoidun objektin, joka sisältää tietoja huonekalusta.
-
-Lisätietoja: [Vercel AI SDK Documentation](https://sdk.vercel.ai/docs)
-
-### Kuvien esikäsittely
-
-Kuvien esikäsittely ennen niiden lähettämistä AI-mallille voi parantaa analyysin tarkkuutta ja nopeutta. Sharp-kirjasto on erinomainen työkalu tähän tarkoitukseen.
-
-Esimerkki Sharp-kirjaston käytöstä:
-
-```javascript
-import sharp from "sharp";
-
-const processedImage = await sharp("input.jpg").resize(800, 600).toBuffer();
-```
-
-Lisätietoja: [Sharp Documentation](https://sharp.pixelplumbing.com/)
-
-## LLM-mallien käyttö ja promptien optimointi
-
-Tässä projektissa käytetään LLM-malleja (Large Language Models) kuten Gemini ja OpenAI:n GPT-malleja. Tässä on muutamia hyödyllisiä vinkkejä näiden mallien tehokkaaseen käyttöön:
-
-### 1. Promptien suunnittelu
-
-- **Ole tarkka ja yksityiskohtainen**: Mitä tarkempi olet promptissasi, sitä parempia tuloksia saat.
-- **Kontekstin antaminen**: Anna mallille riittävästi kontekstia tehtävästä ja halutusta lopputuloksesta.
-- **Esimerkkien käyttö**: Few-shot learning -tekniikka, jossa annat mallille esimerkkejä halutusta vastauksesta, voi parantaa tuloksia huomattavasti.
-
-Esimerkki parannellusta promptista:
-
-```javascript
-const prompt = `
-Olet asiantuntija huonekalujen arvioinnissa. Analysoi seuraava huonekalu:
-Tyyppi: ${furniture.type}
-Merkki: ${furniture.brand}
-Malli: ${furniture.model}
-Materiaali: ${furniture.material}
-Kunto: ${furniture.condition}
-Ikä: ${furniture.age} vuotta
-
-Anna hinta-arvio euroina ja perustele se lyhyesti. Ota huomioon Suomen markkinatilanne.
-
-Esimerkki vastauksesta:
-Hinta-arvio: 450 €
-Perustelu: Kyseessä on hyväkuntoinen, tunnetun valmistajan tuote. Ikä ja pienet käytön jäljet laskevat hieman arvoa, mutta klassinen design pitää hinnan kohtuullisena.
-
-Anna nyt vastauksesi tästä huonekalusta:
-`;
-```
-
-### 2. Mallin valinta ja parametrit
-
-- **Mallin valinta**: Geminin ja OpenAI:n eri malleilla on erilaisia vahvuuksia. Kokeile eri malleja löytääksesi parhaiten tehtävään sopivan.
-- **Lämpötila (Temperature)**: Matalampi lämpötila (lähellä 0) tuottaa johdonmukaisempia vastauksia, korkeampi (lähellä 1) luovempia.
-- **Maksimitokenit**: Katkaisee vastauksen kun kynnysarvo saavutetaan.
-
-Esimerkki mallin konfiguroinnista Geminillä:
-
-```javascript
-const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-pro",
-  generationConfig: {
-    temperature: 0.3,
-    maxOutputTokens: 500,
-  },
-});
-```
-
-### 3. Vastausten käsittely ja validointi
-
-- **Strukturoitu data**: Pyydä mallia tuottamaan vastaukset strukturoidussa muodossa (esim. JSON) helpompaa jatkokäsittelyä varten.
-- **Validointi**:
-  - Strukturoidun datan kanssa: Jos käytät ennalta määriteltyä skeemaa tai työkalua, joka pakottaa mallin tuottamaan strukturoidun tuloksen, voit vähentää tai jopa poistaa erillisen validoinnin tarpeen.
-  - Vapaamuotoisen datan kanssa: On hyvä tarkistaa mallin tuottamat vastaukset. Käytä esimerkiksi Zod-kirjastoa JSON-vastausten validointiin.
-
-### 4. Jatkuva parantaminen
-
-- **Vastausten arviointi**: Seuraa mallien suorituskykyä ja kerää palautetta käyttäjiltä.
-- **Promptien iterointi**: Hienosäädä prompteja saadun palautteen perusteella jatkuvasti.
-- **RAG (Retrieval-Augmented Generation)**: Harkitse RAG-mallin käyttöönottoa oman datan integroimiseksi LLM:n vastauksiin. Tämä on usein tehokkaampi ja joustavampi vaihtoehto kuin perinteinen fine-tuning.
-
-#### RAG-mallin käyttö
-
-RAG yhdistää tiedonhaun (retrieval) ja tekstin generoinnin, mahdollistaen LLM:n käytön yhdessä ulkoisen tietokannan kanssa. Tämä on erityisen hyödyllistä, kun haluat yhdistää yleisen LLM:n tietämyksen omaan erikoistuneeseen dataasi.
-
-RAG:in etuja:
-
-- **Ajantasaisuus**: Voit päivittää tietokantaa ilman mallin uudelleenkoulutusta.
-- **Läpinäkyvyys**: Voit jäljittää, mistä tieto on peräisin.
-- **Kustannustehokkuus**: Usein edullisempi kuin koko mallin fine-tuning.
-
-Esimerkki RAG:in implementoinnista:
-
-```javascript
-import { OpenAI } from 'langchain/llms/openai';
-import { VectorStore } from 'langchain/vectorstores/base';
-import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
-
-async function ragQuery(query, vectorStore) {
-  // 1. Hae relevantit dokumentit vektoritietokannasta
-  const relevantDocs = await vectorStore.similaritySearch(query, 3);
-
-  // 2. Muodosta konteksti relevanteista dokumenteista
-  const context = relevantDocs.map(doc => doc.pageContent).join('\n');
-
-  // 3. Luo prompti, joka yhdistää kyselyn ja kontekstin
-  const prompt = `
-  Konteksti: ${context}
-
-  Kysymys: ${query}
-
-  Anna vastaus perustuen annettuun kontekstiin ja yleiseen tietämykseesi.
-  `;
-
-  // 4. Lähetä prompti LLM:lle
-  const llm = new OpenAI();
-  const response = await llm.predict(prompt);
-
-  return response;
-}
-
-// Käyttöesimerkki
-const vectorStore = // ... alusta vektoritietokanta omalla datallasi
-const query = "Mikä on tyypillinen hinta Artekin jakkara 60:lle?";
-const answer = await ragQuery(query, vectorStore);
-console.log(answer);
-```
+# CSC-Rahti ohjeita
+
+## Sisällysluettelo
+
+1. [API-hinnoittelu](#api-hinnoittelu-yksinkertaisia-esimerkkejä-syyskuu-2024)
+2. [Sovelluksen julkaisu CSC Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-dockerin-avulla---yksinkertainen-ohje)
+3. [GitHub-integraatio Rahti 2:ssa](#sovelluksen-julkaisu-csc-rahti-2ssa-github-integraatiolla)
+4. [React (Vite) + Node.js sovelluksen tuotanto versiot](#react-vite--nodejs-sovelluksen-tuotanto-versiot)
+5. [Rahti-sovelluksen URL-osoitteen (Route) muuttaminen](#rahti-sovelluksen-url-osoitteen-route-muuttaminen)
+6. [PostgreSQL+pgVector tietokannan asennus ja käyttö Rahdissa](#postgresql-pgvector-tietokannan-asennus-ja-käyttö-rahdissa)
+7. [CSC Allas S3 Credentials Hakuohjeet](#csc-allas-s3-credentials-hakuohjeet)
 
 ## API-hinnoittelu: Yksinkertaisia esimerkkejä (Syyskuu 2024)
 
@@ -380,8 +89,6 @@ Valitse JOKO Rahti 2:n oma konttirekisteri TAI DockerHub:
 ### Vaihtoehto A: Rahti 2:n konttirekisteri
 
 (Käytettävissä kun ImageStream on luotu tai ensimmäinen sovellus on viety DockerHubin kautta)
-
-Lisätietoa Rahti 2:n konttirekisterin käytöstä löytyy täältä: https://docs.csc.fi/cloud/rahti2/images/Using_Rahti_2_integrated_registry/
 
 1. Kirjaudu Rahti 2:n rekisteriin:
 
@@ -1214,3 +921,312 @@ Tämä yhteysosoite voidaan määrittää sovelluksen ympäristömuuttujissa.
 ### Huomioitavaa
 
 - Port-forward-yhteys on tilapäinen ja katkaisee yhteyden, jos komentorivi suljetaan. Se on tarkoitettu lähinnä hallintakäyttöön.
+
+# CSC Allas S3 Credentials Hakuohjeet
+
+Tämä ohje kertoo miten saat haettua S3 credentials CSC Allas object storage palveluun Windows 11 ympäristössä.
+
+**Nopea vaihtoehto:** Käytä valmista Python-skriptiä `get_s3_credentials.py` joka löytyy tämän projektin juurikansiosta (Vaihtoehto B). Skripti automatisoi koko prosessin ja hakee credentials yhdellä komennolla.
+
+## Edellytykset
+
+- ✅ CSC käyttäjätunnus ja projekti jossa Allas käytössä
+- ✅ Python 3.8+ asennettu
+- ✅ Pääsy CSC Pouta palveluun ([my.csc.fi](https://my.csc.fi))
+
+## Vaihtoehto A: Manuaalinen credentials haku OpenStack CLI:llä
+
+## Vaihtoehto B: Manuaalinen credentials haku OpenStack CLI:llä
+
+### 1. Luo S3 Bucket Allas käyttöliittymässä
+
+Ennen credentials hakua, luo tarvitsemasi bucket(s):
+
+1. Kirjaudu [CSC Allas käyttöliittymään](https://allas.csc.fi/)
+2. Valitse oikea projekti vasemmasta valikosta
+3. Klikkaa **"+ Create bucket"** luodaksesi uuden bucketin
+4. Anna bucketille yksilöllinen nimi
+
+### Bucket nimeäminen
+
+Bucket nimien tulee olla yksilöllisiä kaikille Allas käyttäjille. CSC suosittelee käyttämään projekti ID:tä nimessä, esim. `2000620-raw-data`. Käytä vain pieniä kirjaimia, numeroita ja viivoja - älä käytä ä, ö tai muita erikoismerkkejä.
+
+### 2. Lataa clouds.yaml konfiguraatio
+
+1. Kirjaudu sisään [CSC Pouta palveluun](https://pouta.csc.fi/)
+2. Siirry **API Access** osioon
+3. Klikkaa **Download OpenStack RC File** ja valitse **OpenStack clouds.yaml file**
+4. Tallenna ladattu `clouds.yaml` tiedosto
+
+### 3. Konfiguroi clouds.yaml
+
+### Luo konfiguraatiokansio
+
+```powershell
+mkdir "$HOME\.config\openstack"
+```
+
+### Tallenna clouds.yaml tiedosto
+
+Siirrä ladattu `clouds.yaml` tiedosto kansioon:
+
+```
+C:\Users\[käyttäjänimi]\.config\openstack\clouds.yaml
+```
+
+### Esimerkki clouds.yaml sisällöstä
+
+```yaml
+clouds:
+  openstack:
+    auth:
+      auth_url: https://pouta.csc.fi:5001/v3
+      username: "käyttäjätunnus"
+      project_id: "2fb68cf252gg40a8bv51d86d922f5977"
+      project_name: "project_2111111"
+      user_domain_name: "Default"
+      # password: "salasana"  # Valinnainen - kysytään automaattisesti
+    regions:
+      - regionOne
+    interface: "public"
+    identity_api_version: 3
+```
+
+**Huom:** Salasanan voi jättää pois - ohjelma kysyy sitä automaattisesti.
+
+### 4. Asenna OpenStack Client
+
+### Asenna Python paketti
+
+```powershell
+python -m pip install --user python-openstackclient
+```
+
+### Korjaa PATH (tärkeää!)
+
+OpenStack client ei välttämättä ole PATH:ssa asennuksen jälkeen. Lisää Python Scripts kansio PATH:iin:
+
+```powershell
+$env:PATH = "C:\Users\[käyttäjänimi]\AppData\Local\Programs\Python\Python313\Scripts;" + $env:PATH
+```
+
+**Huom:** Vaihda `[käyttäjänimi]` ja Python versio (`Python313`) oikeiksi.
+
+**Vinkki:** Jos kohtaat ongelmia PATH-asetuksissa, voit kysyä apua esim. ChatGPT:ltä tai tarkistaa Python-asennuksen sijaintisi komennolla `python -c "import sys; print(sys.executable)"`.
+
+### Testaa asennus
+
+```powershell
+openstack.exe --version
+```
+
+Pitäisi näyttää jotain kuten: `openstack 8.1.0`
+
+### 5. Hae S3 Credentials
+
+### Aseta cloud environment
+
+```powershell
+$env:OS_CLOUD = "openstack"
+```
+
+### Listaa olemassa olevat credentials
+
+```powershell
+openstack.exe ec2 credentials list
+```
+
+Ohjelma kysyy CSC salasanaasi. Syötä se ja saat listan olemassa olevista S3 credentials:
+
+```
++----------------------------------+----------------------------------+----------------------------------+----------+
+| Access                           | Secret                           | Project ID                       | User ID  |
++----------------------------------+----------------------------------+----------------------------------+----------+
+| abc123def456ghi789jkl012mno345pq | xyz789uvw456rst123qpo890lmn567abc | def456abc789ghi012jkl345mno678pqr | käyttäjä |
++----------------------------------+----------------------------------+----------------------------------+----------+
+```
+
+### Luo uudet credentials (jos tarvitaan)
+
+Jos sinulla ei ole olemassa olevia credentials:
+
+```powershell
+openstack.exe ec2 credentials create
+```
+
+### 6. Tallenna Credentials
+
+Kopioi **Access** ja **Secret** arvot ja tallenna ne turvallisesti. Voit käyttää niitä environment variableina:
+
+```powershell
+$env:ALLAS_ACCESS_KEY_ID="abc123def456ghi789jkl012mno345pq"
+$env:ALLAS_SECRET_ACCESS_KEY="xyz789uvw456rst123qpo890lmn567abc"
+$env:ALLAS_ENDPOINT_URL="https://a3s.fi"
+$env:ALLAS_BUCKET_NAME="your-bucket-name"
+```
+
+### 7. Käyttö koodissa
+
+### Python (boto3)
+
+```python
+import boto3
+import os
+
+# Asenna: pip install boto3
+s3 = boto3.client(
+    's3',
+    endpoint_url=os.getenv('ALLAS_ENDPOINT_URL'),
+    aws_access_key_id=os.getenv('ALLAS_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.getenv('ALLAS_SECRET_ACCESS_KEY'),
+    region_name='regionOne'
+)
+
+# Listaa buckets
+buckets = s3.list_buckets()
+for bucket in buckets['Buckets']:
+    print(f"Bucket: {bucket['Name']}")
+
+# Upload tiedosto
+bucket_name = os.getenv('ALLAS_BUCKET_NAME')
+s3.upload_file('local_file.txt', bucket_name, 'remote_file.txt')
+
+# Download tiedosto
+s3.download_file(bucket_name, 'remote_file.txt', 'downloaded_file.txt')
+```
+
+### JavaScript (Node.js)
+
+```javascript
+import {
+  S3Client,
+  ListBucketsCommand,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
+
+// Asenna: npm install @aws-sdk/client-s3
+const s3Client = new S3Client({
+  endpoint: process.env.ALLAS_ENDPOINT_URL,
+  region: "regionOne",
+  credentials: {
+    accessKeyId: process.env.ALLAS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.ALLAS_SECRET_ACCESS_KEY,
+  },
+});
+
+// Listaa buckets
+const { Buckets } = await s3Client.send(new ListBucketsCommand({}));
+Buckets.forEach((bucket) => console.log(`Bucket: ${bucket.Name}`));
+
+// Upload
+const uploadParams = {
+  Bucket: process.env.ALLAS_BUCKET_NAME,
+  Key: "test-file.txt",
+  Body: "Hello Allas!",
+};
+await s3Client.send(new PutObjectCommand(uploadParams));
+```
+
+### 8. .env tiedosto (suositeltu)
+
+Luo projektikansioon `.env` tiedosto:
+
+```ini
+ALLAS_ACCESS_KEY_ID=abc123def456ghi789jkl012mno345pq
+ALLAS_SECRET_ACCESS_KEY=xyz789uvw456rst123qpo890lmn567abc
+ALLAS_ENDPOINT_URL=https://a3s.fi
+ALLAS_BUCKET_NAME=your-bucket-name
+```
+
+**Muista lisätä `.env` tiedosto `.gitignore`:een turvallisuuden vuoksi!**
+
+## Vaihtoehto B: Automaattinen credentials haku Python-skriptillä
+
+Projektin juurikansiossa on valmis `get_s3_credentials.py` skripti, joka automatisoi koko prosessin:
+
+### 1. Asenna tarvittavat Python-paketit
+
+```bash
+pip install keystoneauth1 python-keystoneclient pyyaml
+```
+
+### 2. Lataa clouds.yaml konfiguraatio
+
+1. Kirjaudu [CSC Pouta palveluun](https://pouta.csc.fi/)
+2. Siirry **API Access** osioon
+3. Klikkaa **Download OpenStack RC File** ja valitse **OpenStack clouds.yaml file**
+4. Tallenna ladattu tiedosto nimellä `clouds.yaml` johonkin seuraavista paikoista:
+   - `~/.config/openstack/clouds.yaml` (suositeltu)
+   - `~/clouds.yaml`
+   - Projektin juurikansioon `./clouds.yaml`
+
+### 3. Suorita Python-skripti
+
+```bash
+python get_s3_credentials.py
+```
+
+Skripti:
+
+- Kysyy CSC salasanasi
+- Listaa olemassa olevat S3 credentials
+- Luo uudet credentials jos tarpeellista
+- Näyttää Access Key ja Secret Key jotka voit kopioida sovellukseesi
+
+### 4. Kopioi credentials sovellukseesi
+
+Skripti näyttää credentials muodossa:
+
+```
+Access Key: abc123def456ghi789jkl012mno345pq
+Secret Key: xyz789uvw456rst123qpo890lmn567abc
+Endpoint: https://a3s.fi
+Region: regionOne
+```
+
+## Vianmääritys
+
+### openstack komento ei toimi
+
+Jos saat virheen `openstack : The term 'openstack' is not recognized`:
+
+1. Tarkista Python Scripts kansion sijainti:
+
+   ```powershell
+   python -c "import sys; print(sys.executable)"
+   ```
+
+   Lisää `\Scripts\` loppuun ja aseta se PATH:iin.
+
+2. Kokeile täydellä polulla:
+   ```powershell
+   "C:\Users\[käyttäjä]\AppData\Local\Programs\Python\Python313\Scripts\openstack.exe" --version
+   ```
+
+### pip ei toimi
+
+Käytä Python modulina:
+
+```powershell
+python -m pip install python-openstackclient
+```
+
+## Region tiedot
+
+**Huom:** CSC Allas käyttää `regionOne` nimenä - tätä ei voi vaihtaa. Vaikka palvelu sijaitsee Suomessa, region nimi on aina `regionOne`, ei `eu-north-1` tai vastaava.
+
+## Endpoint tiedot
+
+| Palvelu   | Endpoint                                        | Region      |
+| --------- | ----------------------------------------------- | ----------- |
+| S3 API    | `https://a3s.fi`                                | `regionOne` |
+| Swift API | `https://a3s.fi:443/swift/v1/AUTH_[PROJECT_ID]` | `regionOne` |
+
+---
+
+**Hyödyllisiä linkkejä:**
+
+- [CSC Allas käyttöliittymä](https://allas.csc.fi/)
+- [CSC Allas dokumentaatio](https://docs.csc.fi/data/Allas/)
+- [CSC Pouta](https://pouta.csc.fi/)
+- [CSC How to get Allas S3 credentials](https://docs.csc.fi/support/faq/how-to-get-Allas-s3-credentials/)
