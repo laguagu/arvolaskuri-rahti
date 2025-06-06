@@ -1008,6 +1008,42 @@ Pitäisi näyttää jotain kuten: `openstack 8.1.0`
 
 ### 5. Hae S3 Credentials
 
+### Tarkista ja vaihda projektia tarvittaessa
+
+Ennen S3 credentials luomista, varmista että olet oikeassa projektissa:
+
+### Tarkista nykyinen projekti
+
+```powershell
+openstack.exe configuration show
+```
+
+Etsi rivi `auth.project_id` - tämän arvon pitää täsmätä Object Store endpoint URL:n kanssa. Object Store URL:ssa näkyy muodossa: `AUTH_[project-id]`
+
+### Listaa käytettävissä olevat projektit
+
+```powershell
+openstack.exe project list
+```
+
+### Vaihda projektia
+
+Jos et ole oikeassa projektissa:
+
+```powershell
+openstack.exe project set [projektin-nimi]
+```
+
+Esim: `openstack.exe project set project_2013111`
+
+### Varmista projektin vaihto
+
+```powershell
+openstack.exe project show [projektin-nimi]
+```
+
+**TÄRKEÄÄ:** S3 credentials ja buckets ovat projektikohtaisia. Varmista että luot credentials samassa projektissa kuin missä bucket sijaitsee!
+
 ### Aseta cloud environment
 
 ```powershell
